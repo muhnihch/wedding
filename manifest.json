@@ -1,0 +1,16 @@
+{
+  "name": "Wedding Website",
+  "short_name": "Wedding",
+  "description": "Muhammed & Dr. Fathimathul Husna's Wedding Website",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f0e8",
+  "theme_color": "#d4b896",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
