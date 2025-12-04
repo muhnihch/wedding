@@ -166,3 +166,5 @@ This template is free to use for personal wedding websites. Customize as needed 
 ---
 
 **Congratulations on your upcoming wedding! 💕**
+
+*Last updated: December 4, 2025*
