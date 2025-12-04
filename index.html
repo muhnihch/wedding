@@ -15,18 +15,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="format-detection" content="telephone=no">
     
+    <!-- Force HTTPS via meta redirect -->
+    <meta http-equiv="refresh" content="0; url=https://muhnihch.github.io/wedding/" id="https-redirect">
+    
     <!-- Mobile compatibility -->
+    <!-- Security notice for insecure connections -->
     <noscript>
         <style>
             .hero { min-height: 400px !important; }
             .countdown { display: none !important; }
+            .security-notice { 
+                display: block !important; 
+                background: #ff6b6b; 
+                color: white; 
+                padding: 1rem; 
+                text-align: center; 
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                right: 0; 
+                z-index: 9999; 
+            }
         </style>
+        <div class="security-notice">
+            ⚠️ For your security, please visit: <strong>https://muhnihch.github.io/wedding/</strong>
+        </div>
     </noscript>
     
-    <!-- Force HTTPS only on production -->
+    <!-- Force HTTPS for all GitHub Pages -->
     <script>
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.includes('github.io')) {
-            location.replace('https:' + window.location.href.substring(window.location.protocol.length));
+        // Force HTTPS redirect for GitHub Pages
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            location.href = 'https://muhnihch.github.io/wedding/';
+        }
+        
+        // Ensure we're on the secure GitHub Pages URL
+        if (location.protocol === 'http:' || location.hostname === 'nihadfathiwedding.info') {
+            location.href = 'https://muhnihch.github.io/wedding/';
         }
     </script>
     

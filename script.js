@@ -226,6 +226,20 @@ revealElements.forEach(el => {
     revealObserver.observe(el);
 });
 
+// Ensure HTTPS and remove redirect meta tag once secure
+function ensureHTTPS() {
+    if (location.protocol === 'https:') {
+        // Remove the meta redirect tag once we're on HTTPS
+        const redirect = document.getElementById('https-redirect');
+        if (redirect) {
+            redirect.remove();
+        }
+    } else {
+        // Force redirect to secure GitHub Pages URL
+        location.href = 'https://muhnihch.github.io/wedding/';
+    }
+}
+
 // Mobile security and compatibility fixes
 function handleMobileSecurity() {
     // Disable strict security checks on mobile
@@ -301,6 +315,7 @@ let heartInterval = setInterval(createFloatingHeart, 3000);
 
 // Initialize mobile features on load and resize
 document.addEventListener('DOMContentLoaded', function() {
+    ensureHTTPS();
     handleMobileSecurity();
     initMobileFeatures();
 });
