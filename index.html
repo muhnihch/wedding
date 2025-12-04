@@ -15,44 +15,33 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="format-detection" content="telephone=no">
     
-    <!-- Force HTTPS via meta redirect -->
-    <meta http-equiv="refresh" content="0; url=https://muhnihch.github.io/wedding/" id="https-redirect">
-    
     <!-- Mobile compatibility -->
-    <!-- Security notice for insecure connections -->
+    <!-- Fallback for JavaScript-disabled browsers -->
     <noscript>
         <style>
             .hero { min-height: 400px !important; }
             .countdown { display: none !important; }
-            .security-notice { 
-                display: block !important; 
-                background: #ff6b6b; 
-                color: white; 
-                padding: 1rem; 
-                text-align: center; 
-                position: fixed; 
-                top: 0; 
-                left: 0; 
-                right: 0; 
-                z-index: 9999; 
-            }
         </style>
-        <div class="security-notice">
-            ⚠️ For your security, please visit: <strong>https://muhnihch.github.io/wedding/</strong>
-        </div>
     </noscript>
     
-    <!-- Force HTTPS for all GitHub Pages -->
+    <!-- Smart HTTPS redirect (no loops) -->
     <script>
-        // Force HTTPS redirect for GitHub Pages
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-            location.href = 'https://muhnihch.github.io/wedding/';
-        }
-        
-        // Ensure we're on the secure GitHub Pages URL
-        if (location.protocol === 'http:' || location.hostname === 'nihadfathiwedding.info') {
-            location.href = 'https://muhnihch.github.io/wedding/';
-        }
+        // Only redirect once and prevent loops
+        (function() {
+            var redirected = sessionStorage.getItem('https_redirected');
+            
+            // Only redirect if we haven't already done so and we're not on HTTPS
+            if (!redirected && location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                sessionStorage.setItem('https_redirected', 'true');
+                location.replace('https://muhnihch.github.io/wedding/');
+                return;
+            }
+            
+            // Clear the redirect flag if we're on HTTPS
+            if (location.protocol === 'https:' && redirected) {
+                sessionStorage.removeItem('https_redirected');
+            }
+        })();
     </script>
     
     <title>Our Wedding - Muhammed & Dr. Fathimathul Husna</title>

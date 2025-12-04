@@ -226,24 +226,30 @@ revealElements.forEach(el => {
     revealObserver.observe(el);
 });
 
-// Ensure HTTPS and remove redirect meta tag once secure
+// Ensure HTTPS without causing loops
 function ensureHTTPS() {
+    // Only check, don't redirect (redirect is handled in HTML head)
     if (location.protocol === 'https:') {
-        // Remove the meta redirect tag once we're on HTTPS
-        const redirect = document.getElementById('https-redirect');
-        if (redirect) {
-            redirect.remove();
-        }
-    } else {
-        // Force redirect to secure GitHub Pages URL
-        location.href = 'https://muhnihch.github.io/wedding/';
+        // Clear any redirect flags since we're secure
+        sessionStorage.removeItem('https_redirected');
+        console.log('✅ Secure connection established');
     }
 }
 
 // Mobile security and compatibility fixes
 function handleMobileSecurity() {
-    // Disable strict security checks on mobile
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Prevent reload loops on mobile
+        let reloadCount = parseInt(sessionStorage.getItem('reload_count') || '0');
+        if (reloadCount > 2) {
+            console.log('🛑 Preventing reload loop on mobile');
+            sessionStorage.removeItem('reload_count');
+            sessionStorage.removeItem('https_redirected');
+            return; // Stop any further redirects
+        }
+        
         // Remove any problematic security meta tags dynamically
         const strictCSP = document.querySelector('meta[http-equiv="Content-Security-Policy"]');
         if (strictCSP && strictCSP.content.includes('strict')) {
@@ -261,6 +267,15 @@ function handleMobileSecurity() {
             console.log('Security policy handled for mobile');
             e.preventDefault();
         });
+        
+        // Track page loads to detect loops
+        reloadCount++;
+        sessionStorage.setItem('reload_count', reloadCount.toString());
+        
+        // Clear reload count after successful load
+        setTimeout(() => {
+            sessionStorage.removeItem('reload_count');
+        }, 5000);
     }
 }
 
