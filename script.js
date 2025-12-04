@@ -226,6 +226,84 @@ revealElements.forEach(el => {
     revealObserver.observe(el);
 });
 
+// Mobile-specific improvements
+function initMobileFeatures() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Reduce floating hearts frequency on mobile for better performance
+        clearInterval(heartInterval);
+        heartInterval = setInterval(createFloatingHeart, 6000);
+        
+        // Add touch feedback for buttons
+        const touchElements = document.querySelectorAll('.cta-button, .detail-button, .submit-button, .form-link');
+        touchElements.forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            element.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Optimize countdown for mobile
+        const countdownItems = document.querySelectorAll('.countdown-item');
+        countdownItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            item.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Improve form experience on mobile
+        const formInputs = document.querySelectorAll('input, select, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                // Scroll input into view on mobile
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
+        });
+    }
+}
+
+// Store interval reference for cleanup
+let heartInterval = setInterval(createFloatingHeart, 3000);
+
+// Initialize mobile features on load and resize
+document.addEventListener('DOMContentLoaded', initMobileFeatures);
+window.addEventListener('resize', initMobileFeatures);
+
+// Prevent iOS safari bounce effect while allowing normal scrolling
+document.addEventListener('touchmove', function(e) {
+    if (e.scale !== 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+// Optimize performance on mobile
+if (window.innerWidth <= 768) {
+    // Reduce animation complexity
+    const style = document.createElement('style');
+    style.textContent = `
+        @media (max-width: 768px) {
+            .parallax {
+                background-attachment: scroll !important;
+            }
+            
+            * {
+                animation-duration: 0.3s !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
 // Music player (optional)
 function toggleMusic() {
     const audio = document.getElementById('backgroundMusic');
