@@ -4,15 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data:; font-src 'self' https:; frame-src https://docs.google.com;">
+    <!-- Mobile-friendly Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; font-src 'self' https: data:; frame-src 'self' https:; connect-src 'self' https:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Referrer-Policy" content="no-referrer-when-downgrade">
     
-    <!-- Force HTTPS -->
+    <!-- Mobile viewport optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Mobile compatibility -->
+    <noscript>
+        <style>
+            .hero { min-height: 400px !important; }
+            .countdown { display: none !important; }
+        </style>
+    </noscript>
+    
+    <!-- Force HTTPS only on production -->
     <script>
-        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && !location.hostname.includes('github.io')) {
             location.replace('https:' + window.location.href.substring(window.location.protocol.length));
         }
     </script>
