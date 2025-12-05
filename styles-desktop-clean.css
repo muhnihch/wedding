@@ -90,6 +90,24 @@ body {
     pointer-events: none;
 }
 
+/* Subtle scroll hint chevron for sections (desktop) */
+.section-scroll-hint {
+    position: relative;
+}
+
+.section-scroll-hint::after {
+    content: '\f078'; /* Font Awesome chevron-down */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 18px;
+    color: rgba(0, 0, 0, 0.15);
+    pointer-events: none;
+}
+
 .hero-content {
     z-index: 1;
     color: var(--text-dark);
