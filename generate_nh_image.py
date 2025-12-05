@@ -177,7 +177,7 @@ try:
     ]
     
     main_font = None
-    font_size_main = 85  # Smaller font size
+    font_size_main = 64  # 3/4 of previous size (85 * 0.75)
     
     for font_path in font_paths:
         try:
@@ -188,10 +188,10 @@ try:
     
     if main_font is None:
         main_font = ImageFont.load_default()
-        font_size_main = 50
+        font_size_main = 38  # 3/4 of fallback (50 * 0.75)
 except:
     main_font = ImageFont.load_default()
-    font_size_main = 50
+    font_size_main = 38
 
 # Text to display
 text = "Happy Wedding!"
