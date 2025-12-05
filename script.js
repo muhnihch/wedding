@@ -508,15 +508,6 @@ function initCustomRSVPForm() {
         const guestCount = document.getElementById('guest-count').value;
         const specialMessage = document.getElementById('special-message').value || '';
 
-        // Prepare form data for Google Forms
-        const formData = new URLSearchParams();
-        formData.append(ENTRY_IDS.attendance, attendance);
-        formData.append(ENTRY_IDS.guestSide, guestSide);
-        formData.append(ENTRY_IDS.guestCount, guestCount);
-        if (specialMessage) {
-            formData.append(ENTRY_IDS.specialMessage, specialMessage);
-        }
-
         // Disable submit button and show loading
         const submitBtn = document.getElementById('submit-btn');
         const submitText = submitBtn.querySelector('.submit-text');
@@ -527,57 +518,8 @@ function initCustomRSVPForm() {
             if (submitLoading) submitLoading.style.display = 'inline-block';
         }
 
-        // Submit using a hidden iframe to avoid CORS issues and page reload
-        const iframe = document.createElement('iframe');
-        iframe.name = 'hidden-iframe-' + Date.now();
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-
-        // Create a form to submit via iframe
-        const hiddenForm = document.createElement('form');
-        hiddenForm.method = 'POST';
-        hiddenForm.action = GOOGLE_FORM_URL;
-        hiddenForm.target = iframe.name;
-        hiddenForm.style.display = 'none';
-
-        // Add form fields (always add all required fields, optional fields only if they have values)
-        const input1 = document.createElement('input');
-        input1.type = 'hidden';
-        input1.name = ENTRY_IDS.attendance;
-        input1.value = attendance;
-        hiddenForm.appendChild(input1);
-
-        const input2 = document.createElement('input');
-        input2.type = 'hidden';
-        input2.name = ENTRY_IDS.guestSide;
-        input2.value = guestSide;
-        hiddenForm.appendChild(input2);
-
-        const input3 = document.createElement('input');
-        input3.type = 'hidden';
-        input3.name = ENTRY_IDS.guestCount;
-        input3.value = guestCount;
-        hiddenForm.appendChild(input3);
-
-        // Special message is optional, but we'll include it even if empty
-        const input4 = document.createElement('input');
-        input4.type = 'hidden';
-        input4.name = ENTRY_IDS.specialMessage;
-        input4.value = specialMessage;
-        hiddenForm.appendChild(input4);
-
-        document.body.appendChild(hiddenForm);
-
         // Function to handle success
         function handleSuccess() {
-            // Remove hidden form and iframe
-            if (hiddenForm.parentNode) {
-                hiddenForm.parentNode.removeChild(hiddenForm);
-            }
-            if (iframe.parentNode) {
-                iframe.parentNode.removeChild(iframe);
-            }
-
             // Show success message
             if (successMsg) {
                 successMsg.style.display = 'block';
@@ -597,14 +539,6 @@ function initCustomRSVPForm() {
 
         // Function to handle error
         function handleError() {
-            // Remove hidden form and iframe
-            if (hiddenForm.parentNode) {
-                hiddenForm.parentNode.removeChild(hiddenForm);
-            }
-            if (iframe.parentNode) {
-                iframe.parentNode.removeChild(iframe);
-            }
-
             // Show error message
             if (errorMsg) {
                 errorMsg.style.display = 'block';
@@ -619,44 +553,101 @@ function initCustomRSVPForm() {
             }
         }
 
-        // Handle iframe load (success) - Google Forms redirects after submission
+        // Create a unique iframe name for this submission
+        const iframeName = 'google-form-submit-' + Date.now();
+        
+        // Create hidden iframe
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeName;
+        iframe.id = iframeName;
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+
+        // Create hidden form for submission
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = GOOGLE_FORM_URL;
+        hiddenForm.target = iframeName;
+        hiddenForm.style.display = 'none';
+        hiddenForm.enctype = 'application/x-www-form-urlencoded';
+        hiddenForm.acceptCharset = 'UTF-8';
+
+        // Add form fields
+        const fields = [
+            { name: ENTRY_IDS.attendance, value: attendance },
+            { name: ENTRY_IDS.guestSide, value: guestSide },
+            { name: ENTRY_IDS.guestCount, value: guestCount },
+            { name: ENTRY_IDS.specialMessage, value: specialMessage }
+        ];
+
+        fields.forEach(function(field) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = field.name;
+            input.value = field.value;
+            hiddenForm.appendChild(input);
+        });
+
+        document.body.appendChild(hiddenForm);
+
+        // Track if success was handled
         let successHandled = false;
+
+        // Listen for iframe load (indicates submission completed)
         iframe.onload = function() {
-            // Check if iframe loaded successfully (Google Forms shows a confirmation page)
+            // Wait a bit for Google Forms to process
             setTimeout(function() {
                 if (!successHandled) {
                     successHandled = true;
+                    // Clean up
+                    setTimeout(function() {
+                        if (hiddenForm.parentNode) {
+                            hiddenForm.parentNode.removeChild(hiddenForm);
+                        }
+                        if (iframe.parentNode) {
+                            iframe.parentNode.removeChild(iframe);
+                        }
+                    }, 100);
+                    // Show success
                     handleSuccess();
                 }
-            }, 1000);
+            }, 1500);
         };
 
-        // Fallback timeout - assume success after 2 seconds if iframe loads
+        // Fallback timeout - assume success after 2.5 seconds
         setTimeout(function() {
             if (!successHandled) {
                 successHandled = true;
-                // Check if iframe is still in DOM (means it loaded)
-                if (iframe.parentNode) {
-                    handleSuccess();
-                } else {
-                    handleError();
-                }
+                // Clean up
+                setTimeout(function() {
+                    if (hiddenForm.parentNode) {
+                        hiddenForm.parentNode.removeChild(hiddenForm);
+                    }
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                    }
+                }, 100);
+                // Assume success (Google Forms accepts submissions even if we can't verify)
+                handleSuccess();
             }
-        }, 2000);
-
-        // Handle iframe error
-        iframe.onerror = function() {
-            if (!successHandled) {
-                successHandled = true;
-                handleError();
-            }
-        };
+        }, 2500);
 
         // Submit the form
         try {
             hiddenForm.submit();
         } catch (err) {
             console.error('Form submission error:', err);
+            // Clean up on error
+            if (hiddenForm.parentNode) {
+                hiddenForm.parentNode.removeChild(hiddenForm);
+            }
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
             if (!successHandled) {
                 successHandled = true;
                 handleError();
