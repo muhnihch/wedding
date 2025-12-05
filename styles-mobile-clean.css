@@ -1,0 +1,458 @@
+/* Mobile-specific styles for wedding website - Clean & Elegant */
+/* CSS Variables for consistent theming */
+:root {
+    --primary-color: #8B7355;
+    --secondary-color: #6B5B47;
+    --accent-color: #ffffff;
+    --text-dark: #3A3A3A;
+    --text-light: #ffffff;
+    --background-light: #ffffff;
+    --soft-cream: #FFF8F0;
+    --light-sage: #F8FBF8;
+    --pale-blush: #FDF8F5;
+    --warm-white: #FEFEFE;
+    --gentle-shadow: rgba(139, 115, 85, 0.08);
+    --soft-shadow: rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s ease;
+    --gold-accent: #D4AF37;
+    --section-bg: #FCFCFC;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: var(--text-dark);
+    overflow-x: hidden;
+    font-size: 16px;
+    background: var(--background-light);
+}
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Typography */
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    position: relative;
+    line-height: 1.2;
+    padding: 0 1rem;
+}
+
+.section-title:after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: var(--gold-accent);
+    margin: 1rem auto;
+    border-radius: 1px;
+}
+
+/* Hero Section */
+.hero {
+    height: 70vh;
+    min-height: 600px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, var(--warm-white) 0%, var(--soft-cream) 100%);
+    padding: 2rem 0;
+}
+
+.hero-content {
+    z-index: 1;
+    color: var(--text-dark);
+    max-width: 100%;
+    padding: 0 15px;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    color: var(--primary-color);
+    padding: 0 1rem;
+}
+
+.bride-name, .groom-name {
+    display: block;
+    font-weight: 400;
+    margin: 0.3rem 0;
+}
+
+.ampersand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2rem;
+    margin: 0.5rem 0;
+    color: var(--gold-accent);
+    display: block;
+}
+
+.hero-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+    font-weight: 300;
+}
+
+.hero-location {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: var(--secondary-color);
+}
+
+/* Countdown Timer */
+.countdown {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0 1rem;
+}
+
+.countdown-item {
+    text-align: center;
+    background: var(--background-light);
+    padding: 0.8rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--gold-accent);
+    min-width: 70px;
+    box-shadow: 0 3px 12px var(--gentle-shadow);
+    flex: 1;
+    max-width: 75px;
+    transition: var(--transition);
+}
+
+.countdown-item:active {
+    transform: scale(0.95);
+}
+
+.countdown-number {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Wedding Details Section */
+.details-section {
+    padding: 4rem 0;
+    background: var(--light-sage);
+}
+
+.details-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.detail-card {
+    background: var(--background-light);
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px var(--gentle-shadow);
+    border: 1px solid rgba(139, 115, 85, 0.1);
+    margin-bottom: 1rem;
+}
+
+.detail-card:active {
+    transform: scale(0.98);
+}
+
+.detail-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 2px 8px var(--gentle-shadow);
+}
+
+.detail-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.detail-time {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gold-accent);
+    margin-bottom: 0.5rem;
+}
+
+.detail-venue {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.detail-address, .detail-info {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.google-maps-link {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: var(--transition);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px var(--gentle-shadow);
+}
+
+.google-maps-link:hover,
+.google-maps-link:active {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+/* RSVP Section */
+.rsvp-section {
+    padding: 4rem 0;
+    background: var(--pale-blush);
+}
+
+.rsvp-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+    font-style: italic;
+}
+
+.rsvp-deadline {
+    text-align: center;
+    font-weight: 600;
+    color: var(--gold-accent);
+    margin-bottom: 3rem;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    background: var(--background-light);
+    border-radius: 20px;
+    display: inline-block;
+    box-shadow: 0 3px 10px var(--gentle-shadow);
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Google Forms Integration */
+.google-form-container {
+    max-width: 100%;
+    margin: 0 0.5rem;
+    background: var(--background-light);
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--gentle-shadow);
+    border: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.google-form-container iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Blessings Section */
+.registry-section {
+    padding: 4rem 0;
+    background: var(--soft-cream);
+}
+
+.registry-subtitle {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+    font-style: italic;
+}
+
+.blessings-content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.islamic-quote {
+    background: var(--background-light);
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    margin: 0 0.5rem 2rem;
+    box-shadow: 0 6px 20px var(--gentle-shadow);
+    border: 1px solid var(--gold-accent);
+}
+
+.islamic-quote i {
+    color: var(--gold-accent);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.arabic-text {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.translation {
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.reference {
+    font-weight: 600;
+    color: var(--gold-accent);
+    font-size: 0.9rem;
+}
+
+.blessing-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.blessing-card {
+    background: var(--background-light);
+    padding: 2rem 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px var(--gentle-shadow);
+    transition: var(--transition);
+    border: 1px solid rgba(139, 115, 85, 0.1);
+    margin: 0 0.5rem;
+}
+
+.blessing-card:active {
+    transform: scale(0.98);
+}
+
+.blessing-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    box-shadow: 0 2px 8px var(--gentle-shadow);
+}
+
+.blessing-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 400;
+}
+
+.blessing-card p {
+    color: var(--secondary-color);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Footer */
+.footer {
+    background: var(--primary-color);
+    color: var(--text-light);
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.footer p {
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+    font-size: 0.9rem;
+    padding: 0 1rem;
+}
+
+.footer-heart {
+    color: var(--gold-accent);
+    font-size: 1rem;
+    margin: 0 0.3rem;
+}
+
+/* Touch-friendly adjustments */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .countdown-item {
+        min-width: 60px;
+        padding: 0.6rem 0.4rem;
+    }
+    
+    .countdown-number {
+        font-size: 1.4rem;
+    }
+    
+    .countdown-label {
+        font-size: 0.6rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}

@@ -1,17 +1,20 @@
 /* Desktop-specific styles for wedding website */
 /* CSS Variables for consistent theming */
 :root {
-    --primary-color: #d4b896;
-    --secondary-color: #b8956f;
+    --primary-color: #8B7355;
+    --secondary-color: #6B5B47;
     --accent-color: #ffffff;
     --text-dark: #2c2c2c;
     --text-light: #ffffff;
     --background-light: #ffffff;
-    --cashew-light: #f5f0e8;
-    --pastel-green: #e8f5e8;
-    --pastel-green-light: #f0f8f0;
-    --shadow: rgba(0, 0, 0, 0.1);
+    --soft-cream: #FFF8F0;
+    --light-sage: #F5F8F5;
+    --pale-blush: #FDF8F5;
+    --warm-white: #FEFEFE;
+    --gentle-shadow: rgba(139, 115, 85, 0.1);
+    --soft-shadow: rgba(0, 0, 0, 0.05);
     --transition: all 0.3s ease;
+    --gold-accent: #D4AF37;
 }
 
 /* Reset and Base Styles */
