@@ -159,10 +159,7 @@ body {
 }
 
 .scroll-indicator {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: none;
 }
 
 .scroll-circle {
