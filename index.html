@@ -200,23 +200,85 @@
             <div class="google-form-container">
                 <p class="form-instruction">Please fill out our wedding response form below:</p>
                 
-                <iframe 
-                    src="https://docs.google.com/forms/d/e/1FAIpQLSeBQU91NaduWyIlPcv9bvi68wwDiBFOABbEkFS7-Wv5shAfHA/viewform?embedded=true" 
-                    width="100%" 
-                    height="650" 
-                    frameborder="0" 
-                    marginheight="0" 
-                    marginwidth="0"
-                    class="google-form-iframe">
-                    Loading…
-                </iframe>
-                
-                <div class="form-fallback">
-                    <p>Having trouble with the form above?</p>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBQU91NaduWyIlPcv9bvi68wwDiBFOABbEkFS7-Wv5shAfHA/viewform" 
-                       target="_blank" 
-                       class="form-link">Open form in new window</a>
-                </div>
+                <form id="custom-rsvp-form" class="custom-rsvp-form" novalidate>
+                    <!-- Attendance Field -->
+                    <div class="form-group">
+                        <label for="attendance" class="form-label">
+                            Will you be attending <span class="required-asterisk">*</span>
+                        </label>
+                        <select id="attendance" name="attendance" class="form-select" required>
+                            <option value="">Choose</option>
+                            <option value="Joyfully accept">Joyfully accept</option>
+                            <option value="Not attending">Not attending</option>
+                        </select>
+                        <span class="error-message" id="attendance-error"></span>
+                    </div>
+
+                    <!-- Guest Side Field -->
+                    <div class="form-group">
+                        <label for="guest-side" class="form-label">
+                            Are you guest from <span class="required-asterisk">*</span>
+                        </label>
+                        <select id="guest-side" name="guest-side" class="form-select" required>
+                            <option value="">Choose</option>
+                            <option value="Groom side">Groom side</option>
+                            <option value="Bride side">Bride side</option>
+                        </select>
+                        <span class="error-message" id="guest-side-error"></span>
+                    </div>
+
+                    <!-- Guest Count Field -->
+                    <div class="form-group">
+                        <label for="guest-count" class="form-label">
+                            Guest count <span class="required-asterisk">*</span>
+                        </label>
+                        <select id="guest-count" name="guest-count" class="form-select" required>
+                            <option value="">Choose</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                        </select>
+                        <span class="error-message" id="guest-count-error"></span>
+                    </div>
+
+                    <!-- Special Message Field -->
+                    <div class="form-group">
+                        <label for="special-message" class="form-label">
+                            Special message for the couple
+                        </label>
+                        <textarea id="special-message" name="special-message" class="form-textarea" rows="4" placeholder="Your message here..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group form-submit-group">
+                        <button type="submit" class="submit-button" id="submit-btn">
+                            <span class="submit-text">Submit</span>
+                            <span class="submit-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Submitting...
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="form-success" class="form-success-message" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Thank You!</h3>
+                        <p>Your response has been submitted successfully. We can't wait to celebrate with you!</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="form-error" class="form-error-message" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>There was an error submitting your response. Please try again or contact us directly.</p>
+                    </div>
+                </form>
             </div>
         </div>
     </section>

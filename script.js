@@ -405,63 +405,157 @@ const musicButton = `
 // Uncomment to add music player
 // document.body.insertAdjacentHTML('beforeend', musicButton);
 
-// Auto-resize Google Form iframe to fit content
-function resizeGoogleFormIframe() {
-    const iframe = document.querySelector('.google-form-iframe');
-    if (!iframe) return;
-    
-    // Listen for messages from Google Forms (they send height updates)
-    window.addEventListener('message', function(event) {
-        // Verify the message is from Google Forms
-        if (event.origin !== 'https://docs.google.com') return;
-        
-        // Check if message contains height information
-        if (event.data && typeof event.data === 'object' && event.data['scrollHeight']) {
-            const newHeight = event.data['scrollHeight'];
-            if (newHeight && newHeight > 0) {
-                iframe.style.height = newHeight + 'px';
+// Custom Google Form Submission Handler
+function initCustomRSVPForm() {
+    const form = document.getElementById('custom-rsvp-form');
+    if (!form) return;
+
+    // Google Form endpoint and entry IDs
+    const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeBQU91NaduWyIlPcv9bvi68wwDiBFOABbEkFS7-Wv5shAfHA/formResponse';
+    const ENTRY_IDS = {
+        attendance: 'entry.735874152',
+        guestSide: 'entry.907479783',
+        guestCount: 'entry.535662642',
+        specialMessage: 'entry.880523848'
+    };
+
+    // Form validation
+    function validateForm() {
+        let isValid = true;
+        const errors = {};
+
+        // Validate attendance
+        const attendance = document.getElementById('attendance').value;
+        if (!attendance || attendance === '') {
+            errors.attendance = 'Please select your attendance';
+            isValid = false;
+        }
+
+        // Validate guest side
+        const guestSide = document.getElementById('guest-side').value;
+        if (!guestSide || guestSide === '') {
+            errors.guestSide = 'Please select which side you are from';
+            isValid = false;
+        }
+
+        // Validate guest count
+        const guestCount = document.getElementById('guest-count').value;
+        if (!guestCount || guestCount === '') {
+            errors.guestCount = 'Please select guest count';
+            isValid = false;
+        }
+
+        // Display errors
+        Object.keys(errors).forEach(field => {
+            const errorElement = document.getElementById(field + '-error');
+            if (errorElement) {
+                errorElement.textContent = errors[field];
             }
+            const inputElement = document.getElementById(field === 'guestSide' ? 'guest-side' : field === 'guestCount' ? 'guest-count' : field);
+            if (inputElement) {
+                inputElement.style.borderColor = '#d32f2f';
+            }
+        });
+
+        // Clear errors for valid fields
+        ['attendance', 'guest-side', 'guest-count'].forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            const errorId = fieldId === 'guest-side' ? 'guest-side-error' : fieldId === 'guest-count' ? 'guest-count-error' : fieldId + '-error';
+            const errorElement = document.getElementById(errorId);
+            if (field && field.value && errorElement) {
+                errorElement.textContent = '';
+                field.style.borderColor = '';
+            }
+        });
+
+        return isValid;
+    }
+
+    // Clear error styling on input
+    ['attendance', 'guest-side', 'guest-count'].forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('change', function() {
+                this.style.borderColor = '';
+                const errorId = fieldId === 'guest-side' ? 'guest-side-error' : fieldId === 'guest-count' ? 'guest-count-error' : fieldId + '-error';
+                const errorElement = document.getElementById(errorId);
+                if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            });
         }
     });
-    
-    // Fallback: Set a reasonable height based on form structure
-    // The form has 4 questions + submit button, so around 650px should work
-    // Desktop: 650px, Mobile: 550px
-    if (window.innerWidth <= 768) {
-        iframe.style.height = '550px';
-    } else {
-        iframe.style.height = '650px';
-    }
-    
-    // Try to get iframe content height (may be blocked by CORS)
-    try {
-        iframe.onload = function() {
-            try {
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                const body = iframeDoc.body;
-                const html = iframeDoc.documentElement;
-                const height = Math.max(
-                    body.scrollHeight, body.offsetHeight,
-                    html.clientHeight, html.scrollHeight, html.offsetHeight
-                );
-                if (height > 0) {
-                    iframe.style.height = (height + 50) + 'px'; // Add some padding
-                }
-            } catch (e) {
-                // CORS may block access, use default height
-                console.log('Cannot access iframe content (CORS), using default height');
-            }
-        };
-    } catch (e) {
-        // Iframe may not be loaded yet
-    }
+
+    // Form submission handler
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Hide previous messages
+        document.getElementById('form-success').style.display = 'none';
+        document.getElementById('form-error').style.display = 'none';
+
+        // Validate form
+        if (!validateForm()) {
+            return;
+        }
+
+        // Get form data
+        const attendance = document.getElementById('attendance').value;
+        const guestSide = document.getElementById('guest-side').value;
+        const guestCount = document.getElementById('guest-count').value;
+        const specialMessage = document.getElementById('special-message').value || '';
+
+        // Prepare form data for Google Forms
+        const formData = new URLSearchParams();
+        formData.append(ENTRY_IDS.attendance, attendance);
+        formData.append(ENTRY_IDS.guestSide, guestSide);
+        formData.append(ENTRY_IDS.guestCount, guestCount);
+        if (specialMessage) {
+            formData.append(ENTRY_IDS.specialMessage, specialMessage);
+        }
+
+        // Disable submit button and show loading
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = submitBtn.querySelector('.submit-text');
+        const submitLoading = submitBtn.querySelector('.submit-loading');
+        submitBtn.disabled = true;
+        submitText.style.display = 'none';
+        submitLoading.style.display = 'inline-block';
+
+        try {
+            // Submit to Google Forms
+            const response = await fetch(GOOGLE_FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Google Forms doesn't support CORS, so we use no-cors
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            // With no-cors mode, we can't read the response, but if no error is thrown, assume success
+            // Show success message
+            document.getElementById('form-success').style.display = 'block';
+            form.reset();
+            
+            // Scroll to success message
+            document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        } catch (error) {
+            console.error('Form submission error:', error);
+            // Show error message
+            document.getElementById('form-error').style.display = 'block';
+            document.getElementById('form-error').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } finally {
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitText.style.display = 'inline-block';
+            submitLoading.style.display = 'none';
+        }
+    });
 }
 
-// Initialize iframe resizing when DOM is ready
+// Initialize custom form when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    resizeGoogleFormIframe();
-    
-    // Also try after a delay to ensure iframe is loaded
-    setTimeout(resizeGoogleFormIframe, 1000);
-    setTimeout(resizeGoogleFormIframe, 3000);
+    initCustomRSVPForm();
 });

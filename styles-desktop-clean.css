@@ -388,6 +388,165 @@ body {
     border-radius: 10px;
 }
 
+/* Custom RSVP Form Styles */
+.custom-rsvp-form {
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.required-asterisk {
+    color: #d32f2f;
+    margin-left: 2px;
+}
+
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 2px solid rgba(139, 115, 85, 0.3);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: 'Open Sans', sans-serif;
+    background: #ffffff;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(212, 184, 150, 0.2);
+    background: #fffef9;
+}
+
+.form-select:hover {
+    border-color: rgba(139, 115, 85, 0.5);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+.error-message {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    min-height: 1.5rem;
+    font-style: italic;
+}
+
+.form-submit-group {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.submit-button {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.3rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 184, 150, 0.3);
+    position: relative;
+}
+
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 184, 150, 0.4);
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+}
+
+.submit-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.form-success-message {
+    background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    animation: slideIn 0.5s ease;
+}
+
+.form-success-message i {
+    font-size: 3rem;
+    color: #4caf50;
+    margin-bottom: 1rem;
+}
+
+.form-success-message h3 {
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.form-success-message p {
+    color: #666;
+    line-height: 1.6;
+}
+
+.form-error-message {
+    background: #ffebee;
+    border: 2px solid #d32f2f;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: 1rem;
+    animation: slideIn 0.5s ease;
+}
+
+.form-error-message i {
+    font-size: 2rem;
+    color: #d32f2f;
+    margin-bottom: 0.5rem;
+}
+
+.form-error-message p {
+    color: #c62828;
+    margin: 0;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Blessings Section */
 .registry-section {
     padding: 8rem 0;
