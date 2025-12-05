@@ -122,10 +122,9 @@ body {
 }
 
 .scroll-indicator {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
 }
 
 .scroll-circle {
