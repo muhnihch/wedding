@@ -19,8 +19,21 @@
 
 function doPost(e) {
   try {
-    // Get the active spreadsheet
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    // Get the spreadsheet
+    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    
+    // Try to get "Form responses" sheet, or fall back to active sheet
+    let sheet;
+    try {
+      sheet = spreadsheet.getSheetByName('Form responses');
+      if (!sheet) {
+        // If "Form responses" doesn't exist, use the active sheet
+        sheet = spreadsheet.getActiveSheet();
+      }
+    } catch (e) {
+      // Fallback to active sheet if there's any error
+      sheet = spreadsheet.getActiveSheet();
+    }
     
     // Parse the POST data
     let data;
