@@ -91,22 +91,34 @@ body {
     pointer-events: none;
 }
 
+.scroll-hint {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    color: var(--gold-accent);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
 /* Subtle scroll hint chevron for sections (mobile) */
 .section-scroll-hint {
     position: relative;
 }
 
 .section-scroll-hint::after {
-    content: '\f078'; /* Font Awesome chevron-down */
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
+    content: '▼';
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 16px;
-    color: rgba(0, 0, 0, 0.18);
+    line-height: 1;
+    color: var(--gold-accent);
+    opacity: 0.4;
     pointer-events: none;
+    z-index: 1;
 }
 
 .hero-content {
