@@ -35,19 +35,36 @@ function doPost(e) {
       sheet = spreadsheet.getActiveSheet();
     }
     
-    // Parse the POST data
+    // Parse the POST data - handle both JSON and form-encoded
     let data;
     try {
-      data = JSON.parse(e.postData.contents);
+      if (e.postData && e.postData.contents) {
+        data = JSON.parse(e.postData.contents);
+      } else if (e.parameter) {
+        // Form-encoded data
+        data = {
+          attendance: e.parameter.attendance || '',
+          guestSide: e.parameter.guestSide || '',
+          guestCount: e.parameter.guestCount || '',
+          specialMessage: e.parameter.specialMessage || ''
+        };
+      } else {
+        throw new Error('No data received');
+      }
     } catch (parseError) {
-      // If JSON parsing fails, try form-encoded data
-      const params = e.parameter;
-      data = {
-        attendance: params.attendance || '',
-        guestSide: params.guestSide || '',
-        guestCount: params.guestCount || '',
-        specialMessage: params.specialMessage || ''
-      };
+      // Log error for debugging
+      console.error('Error parsing data:', parseError);
+      // Try to get data from parameters as fallback
+      if (e.parameter) {
+        data = {
+          attendance: e.parameter.attendance || '',
+          guestSide: e.parameter.guestSide || '',
+          guestCount: e.parameter.guestCount || '',
+          specialMessage: e.parameter.specialMessage || ''
+        };
+      } else {
+        throw new Error('Failed to parse request data: ' + parseError.toString());
+      }
     }
     
     // Get current timestamp

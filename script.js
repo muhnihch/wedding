@@ -584,51 +584,97 @@ function initCustomRSVPForm() {
             specialMessage: specialMessage
         };
 
-        // Submit to Google Apps Script using fetch with CORS
-        // Note: Make sure your Google Apps Script deployment allows "Anyone" access
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'cors', // Try CORS first - Google Apps Script supports it
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(function(response) {
-            // Try to read response if CORS is enabled
-            if (response.ok) {
-                return response.json().catch(function() {
-                    // If response isn't JSON, that's okay - Google Apps Script might return text
-                    return { status: 'success' };
-                });
-            } else {
-                throw new Error('Server responded with error');
-            }
-        })
-        .then(function(data) {
-            // Success - data was saved
-            handleSuccess();
-        })
-        .catch(function(error) {
-            console.error('Form submission error:', error);
-            // Fallback: Try with no-cors mode (can't verify success, but will attempt submission)
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(function() {
-                // Assume success with no-cors (can't verify)
+        // Submit to Google Apps Script using a hidden form (most reliable method)
+        // This works better than fetch for Google Apps Script
+        const iframeName = 'google-script-submit-' + Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeName;
+        iframe.id = iframeName;
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = GOOGLE_SCRIPT_URL;
+        hiddenForm.target = iframeName;
+        hiddenForm.style.display = 'none';
+        hiddenForm.enctype = 'application/x-www-form-urlencoded';
+        hiddenForm.acceptCharset = 'UTF-8';
+
+        // Add form fields as hidden inputs
+        function addHiddenInput(name, value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            hiddenForm.appendChild(input);
+        }
+
+        addHiddenInput('attendance', attendance);
+        addHiddenInput('guestSide', guestSide);
+        addHiddenInput('guestCount', guestCount);
+        addHiddenInput('specialMessage', specialMessage);
+
+        document.body.appendChild(hiddenForm);
+
+        let successHandled = false;
+
+        // Handle iframe load (indicates submission completed)
+        iframe.onload = function() {
+            setTimeout(function() {
+                if (!successHandled) {
+                    successHandled = true;
+                    // Clean up
+                    setTimeout(function() {
+                        if (hiddenForm.parentNode) {
+                            hiddenForm.parentNode.removeChild(hiddenForm);
+                        }
+                        if (iframe.parentNode) {
+                            iframe.parentNode.removeChild(iframe);
+                        }
+                    }, 100);
+                    handleSuccess();
+                }
+            }, 1000);
+        };
+
+        // Fallback timeout
+        setTimeout(function() {
+            if (!successHandled) {
+                successHandled = true;
+                setTimeout(function() {
+                    if (hiddenForm.parentNode) {
+                        hiddenForm.parentNode.removeChild(hiddenForm);
+                    }
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                    }
+                }, 100);
+                // Assume success (Google Apps Script accepts submissions)
                 handleSuccess();
-            })
-            .catch(function(fallbackError) {
-                console.error('Fallback submission also failed:', fallbackError);
-                handleError('Failed to submit form. Please try again or contact us directly.');
-            });
-        });
+            }
+        }, 2000);
+
+        // Submit the form
+        try {
+            hiddenForm.submit();
+        } catch (err) {
+            console.error('Form submission error:', err);
+            if (hiddenForm.parentNode) {
+                hiddenForm.parentNode.removeChild(hiddenForm);
+            }
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+            if (!successHandled) {
+                successHandled = true;
+                handleError('Failed to submit form. Please try again.');
+            }
+        }
 
         // Return false to prevent any default behavior
         return false;
