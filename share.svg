@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f1e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ede7da;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background gradient -->
+  <rect width="1200" height="630" fill="url(#grad)"/>
+  
+  <!-- Top border pattern -->
+  <g stroke="#d4a574" stroke-width="2" fill="none">
+    <rect x="10" y="10" width="64" height="64"/>
+    <polygon points="42,20 56,42 42,56 28,42" fill="#a67c52"/>
+    <rect x="90" y="10" width="64" height="64"/>
+    <polygon points="122,20 136,42 122,56 108,42" fill="#a67c52"/>
+    <rect x="170" y="10" width="64" height="64"/>
+    <polygon points="202,20 216,42 202,56 188,42" fill="#a67c52"/>
+    <rect x="250" y="10" width="64" height="64"/>
+    <polygon points="282,20 296,42 282,56 268,42" fill="#a67c52"/>
+    <rect x="330" y="10" width="64" height="64"/>
+    <polygon points="362,20 376,42 362,56 348,42" fill="#a67c52"/>
+    <rect x="410" y="10" width="64" height="64"/>
+    <polygon points="442,20 456,42 442,56 428,42" fill="#a67c52"/>
+    <rect x="490" y="10" width="64" height="64"/>
+    <polygon points="522,20 536,42 522,56 508,42" fill="#a67c52"/>
+    <rect x="570" y="10" width="64" height="64"/>
+    <polygon points="602,20 616,42 602,56 588,42" fill="#a67c52"/>
+    <rect x="650" y="10" width="64" height="64"/>
+    <polygon points="682,20 696,42 682,56 668,42" fill="#a67c52"/>
+    <rect x="730" y="10" width="64" height="64"/>
+    <polygon points="762,20 776,42 762,56 748,42" fill="#a67c52"/>
+    <rect x="810" y="10" width="64" height="64"/>
+    <polygon points="842,20 856,42 842,56 828,42" fill="#a67c52"/>
+    <rect x="890" y="10" width="64" height="64"/>
+    <polygon points="922,20 936,42 922,56 908,42" fill="#a67c52"/>
+    <rect x="970" y="10" width="64" height="64"/>
+    <polygon points="1002,20 1016,42 1002,56 988,42" fill="#a67c52"/>
+    <rect x="1050" y="10" width="64" height="64"/>
+    <polygon points="1082,20 1096,42 1082,56 1068,42" fill="#a67c52"/>
+    <rect x="1130" y="10" width="64" height="64"/>
+    <polygon points="1162,20 1176,42 1162,56 1148,42" fill="#a67c52"/>
+  </g>
+  
+  <!-- Left border stars -->
+  <g fill="#d4a574" stroke="#a67c52" stroke-width="1">
+    <polygon points="40,80 45,95 61,95 48,105 52,120 40,110 28,120 32,105 19,95 35,95" />
+    <polygon points="40,180 45,195 61,195 48,205 52,220 40,210 28,220 32,205 19,195 35,195" />
+    <polygon points="40,280 45,295 61,295 48,305 52,320 40,310 28,320 32,305 19,295 35,295" />
+    <polygon points="40,380 45,395 61,395 48,405 52,420 40,410 28,420 32,405 19,395 35,395" />
+    <polygon points="40,480 45,495 61,495 48,505 52,520 40,510 28,520 32,505 19,495 35,495" />
+    <polygon points="40,580 45,595 61,595 48,605 52,620 40,610 28,620 32,605 19,595 35,595" />
+  </g>
+  
+  <!-- Right border stars -->
+  <g fill="#d4a574" stroke="#a67c52" stroke-width="1">
+    <polygon points="1160,80 1165,95 1181,95 1168,105 1172,120 1160,110 1148,120 1152,105 1139,95 1155,95" />
+    <polygon points="1160,180 1165,195 1181,195 1168,205 1172,220 1160,210 1148,220 1152,205 1139,195 1155,195" />
+    <polygon points="1160,280 1165,295 1181,295 1168,305 1172,320 1160,310 1148,320 1152,305 1139,295 1155,295" />
+    <polygon points="1160,380 1165,395 1181,395 1168,405 1172,420 1160,410 1148,420 1152,405 1139,395 1155,395" />
+    <polygon points="1160,480 1165,495 1181,495 1168,505 1172,520 1160,510 1148,520 1152,505 1139,495 1155,495" />
+    <polygon points="1160,580 1165,595 1181,595 1168,605 1172,620 1160,610 1148,620 1152,605 1139,595 1155,595" />
+  </g>
+  
+  <!-- Center decorative star (large) -->
+  <g fill="#d4a574" stroke="#a67c52" stroke-width="2">
+    <polygon points="600,220 610,250 642,250 618,270 628,300 600,280 572,300 582,270 558,250 590,250" />
+  </g>
+  
+  <!-- Text content -->
+  <text x="600" y="380" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#8b6f47" text-anchor="middle">Muhammed &amp; Dr. Husna</text>
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="28" fill="#a67c52" text-anchor="middle">December 28, 2025</text>
+  <text x="600" y="510" font-family="Arial, sans-serif" font-size="28" fill="#a67c52" text-anchor="middle">Babil Greens, Kerala</text>
+</svg>
