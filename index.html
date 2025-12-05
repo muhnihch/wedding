@@ -100,7 +100,9 @@
             <a href="#details" class="cta-button">View Wedding Details</a>
         </div>
         <div class="scroll-indicator">
-            <i class="fas fa-chevron-down"></i>
+            <button type="button" class="scroll-circle" onclick="document.getElementById('details').scrollIntoView({ behavior: 'smooth' });">
+                447
+            </button>
         </div>
     </section>
 
@@ -217,8 +219,12 @@
                 </div>
                 <div class="footer-date">December 28, 2025</div>
                 <div class="footer-social">
-                    <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="mailto:wedding@muhammedfathima.com"><i class="fas fa-envelope"></i></a>
+                    <a href="https://instagram.com" target="_blank" aria-label="Instagram" class="footer-icon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="mailto:example@mail.com" aria-label="Email" class="footer-icon">
+                        <i class="fas fa-envelope"></i>
+                    </a>
                 </div>
                 <div class="footer-hashtag">#MuhammedFathimaWedding</div>
             </div>

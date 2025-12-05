@@ -121,6 +121,28 @@ body {
     color: var(--secondary-color);
 }
 
+.scroll-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.scroll-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-color);
+    color: var(--text-light);
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px var(--gentle-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* Countdown Timer */
 .countdown {
     display: flex;
@@ -455,6 +477,25 @@ body {
     color: var(--gold-accent);
     font-size: 1rem;
     margin: 0 0.3rem;
+}
+
+.footer-social {
+    margin-top: 0.8rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.footer-social a,
+.footer-icon {
+    color: var(--gold-accent);
+    font-size: 1.3rem;
+    text-decoration: none;
+}
+
+.footer-social a:hover,
+.footer-social a:active {
+    color: var(--text-light);
 }
 
 /* Touch-friendly adjustments */
