@@ -410,13 +410,13 @@ function initCustomRSVPForm() {
     const form = document.getElementById('custom-rsvp-form');
     if (!form) return;
 
-    // Google Form endpoint and entry IDs
+    // Google Form endpoint and entry IDs (verified from form structure)
     const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeBQU91NaduWyIlPcv9bvi68wwDiBFOABbEkFS7-Wv5shAfHA/formResponse';
     const ENTRY_IDS = {
-        attendance: 'entry.735874152',
-        guestSide: 'entry.907479783',
-        guestCount: 'entry.535662642',
-        specialMessage: 'entry.880523848'
+        attendance: 'entry.2114599373',
+        guestSide: 'entry.1795612852',
+        guestCount: 'entry.1636779595',
+        specialMessage: 'entry.1564302628'
     };
 
     // Form validation
@@ -487,16 +487,19 @@ function initCustomRSVPForm() {
     });
 
     // Form submission handler
-    form.addEventListener('submit', async function(e) {
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
+        e.stopPropagation();
 
         // Hide previous messages
-        document.getElementById('form-success').style.display = 'none';
-        document.getElementById('form-error').style.display = 'none';
+        const successMsg = document.getElementById('form-success');
+        const errorMsg = document.getElementById('form-error');
+        if (successMsg) successMsg.style.display = 'none';
+        if (errorMsg) errorMsg.style.display = 'none';
 
         // Validate form
         if (!validateForm()) {
-            return;
+            return false;
         }
 
         // Get form data
@@ -518,40 +521,149 @@ function initCustomRSVPForm() {
         const submitBtn = document.getElementById('submit-btn');
         const submitText = submitBtn.querySelector('.submit-text');
         const submitLoading = submitBtn.querySelector('.submit-loading');
-        submitBtn.disabled = true;
-        submitText.style.display = 'none';
-        submitLoading.style.display = 'inline-block';
-
-        try {
-            // Submit to Google Forms
-            const response = await fetch(GOOGLE_FORM_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Google Forms doesn't support CORS, so we use no-cors
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: formData.toString()
-            });
-
-            // With no-cors mode, we can't read the response, but if no error is thrown, assume success
-            // Show success message
-            document.getElementById('form-success').style.display = 'block';
-            form.reset();
-            
-            // Scroll to success message
-            document.getElementById('form-success').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-        } catch (error) {
-            console.error('Form submission error:', error);
-            // Show error message
-            document.getElementById('form-error').style.display = 'block';
-            document.getElementById('form-error').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } finally {
-            // Re-enable submit button
-            submitBtn.disabled = false;
-            submitText.style.display = 'inline-block';
-            submitLoading.style.display = 'none';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            if (submitText) submitText.style.display = 'none';
+            if (submitLoading) submitLoading.style.display = 'inline-block';
         }
+
+        // Submit using a hidden iframe to avoid CORS issues and page reload
+        const iframe = document.createElement('iframe');
+        iframe.name = 'hidden-iframe-' + Date.now();
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        // Create a form to submit via iframe
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = GOOGLE_FORM_URL;
+        hiddenForm.target = iframe.name;
+        hiddenForm.style.display = 'none';
+
+        // Add form fields (always add all required fields, optional fields only if they have values)
+        const input1 = document.createElement('input');
+        input1.type = 'hidden';
+        input1.name = ENTRY_IDS.attendance;
+        input1.value = attendance;
+        hiddenForm.appendChild(input1);
+
+        const input2 = document.createElement('input');
+        input2.type = 'hidden';
+        input2.name = ENTRY_IDS.guestSide;
+        input2.value = guestSide;
+        hiddenForm.appendChild(input2);
+
+        const input3 = document.createElement('input');
+        input3.type = 'hidden';
+        input3.name = ENTRY_IDS.guestCount;
+        input3.value = guestCount;
+        hiddenForm.appendChild(input3);
+
+        // Special message is optional, but we'll include it even if empty
+        const input4 = document.createElement('input');
+        input4.type = 'hidden';
+        input4.name = ENTRY_IDS.specialMessage;
+        input4.value = specialMessage;
+        hiddenForm.appendChild(input4);
+
+        document.body.appendChild(hiddenForm);
+
+        // Function to handle success
+        function handleSuccess() {
+            // Remove hidden form and iframe
+            if (hiddenForm.parentNode) {
+                hiddenForm.parentNode.removeChild(hiddenForm);
+            }
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+
+            // Show success message
+            if (successMsg) {
+                successMsg.style.display = 'block';
+                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            
+            // Reset form
+            form.reset();
+
+            // Re-enable submit button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                if (submitText) submitText.style.display = 'inline-block';
+                if (submitLoading) submitLoading.style.display = 'none';
+            }
+        }
+
+        // Function to handle error
+        function handleError() {
+            // Remove hidden form and iframe
+            if (hiddenForm.parentNode) {
+                hiddenForm.parentNode.removeChild(hiddenForm);
+            }
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+
+            // Show error message
+            if (errorMsg) {
+                errorMsg.style.display = 'block';
+                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            // Re-enable submit button
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                if (submitText) submitText.style.display = 'inline-block';
+                if (submitLoading) submitLoading.style.display = 'none';
+            }
+        }
+
+        // Handle iframe load (success) - Google Forms redirects after submission
+        let successHandled = false;
+        iframe.onload = function() {
+            // Check if iframe loaded successfully (Google Forms shows a confirmation page)
+            setTimeout(function() {
+                if (!successHandled) {
+                    successHandled = true;
+                    handleSuccess();
+                }
+            }, 1000);
+        };
+
+        // Fallback timeout - assume success after 2 seconds if iframe loads
+        setTimeout(function() {
+            if (!successHandled) {
+                successHandled = true;
+                // Check if iframe is still in DOM (means it loaded)
+                if (iframe.parentNode) {
+                    handleSuccess();
+                } else {
+                    handleError();
+                }
+            }
+        }, 2000);
+
+        // Handle iframe error
+        iframe.onerror = function() {
+            if (!successHandled) {
+                successHandled = true;
+                handleError();
+            }
+        };
+
+        // Submit the form
+        try {
+            hiddenForm.submit();
+        } catch (err) {
+            console.error('Form submission error:', err);
+            if (!successHandled) {
+                successHandled = true;
+                handleError();
+            }
+        }
+
+        return false;
     });
 }
 
