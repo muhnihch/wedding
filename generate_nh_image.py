@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Generate a simple share image with two doves symbol for WhatsApp sharing.
-Uses cashew/wedding colors.
+Generate a celebrative share image with "Happy Wedding!" text and festive border.
+Uses cashew/wedding colors - celebrative and elegant.
 """
 
 from PIL import Image, ImageDraw, ImageFont
@@ -36,156 +36,202 @@ for y in range(height):
     draw.line([(0, y), (width, y)], fill=(r, g, b))
 
 # Convert colors to RGB
-dove_color = hex_to_rgb(CASHEW_PRIMARY)
-dove_outline = hex_to_rgb(CASHEW_DARK)
-gold_rgb = hex_to_rgb(GOLD)
+text_color = hex_to_rgb(CASHEW_DARK)
+accent_color = hex_to_rgb(GOLD)
+frame_color = hex_to_rgb(CASHEW_PRIMARY)
+frame_outline = hex_to_rgb(CASHEW_DARK)
 
-# Center position
-center_x, center_y = width // 2, height // 2
-dove_size = 180  # Size of each dove
+# Draw celebrative wedding-themed border
+border_margin = 70
+border_thickness = 8
 
-def draw_dove(draw, x, y, size, facing_right=True):
-    """Draw a simple, elegant dove silhouette"""
-    scale = size / 200.0
+# Outer decorative border with pattern
+draw.rectangle([border_margin, border_margin, 
+                width - border_margin, height - border_margin],
+               fill=None, outline=frame_outline, width=border_thickness)
+
+# Middle decorative border
+middle_border = border_margin + 15
+draw.rectangle([middle_border, middle_border,
+                width - middle_border, height - middle_border],
+               fill=None, outline=accent_color, width=4)
+
+# Inner border
+inner_border = border_margin + 25
+draw.rectangle([inner_border, inner_border,
+                width - inner_border, height - inner_border],
+               fill=None, outline=frame_color, width=3)
+
+# Draw celebrative corner elements (elaborate floral patterns)
+corner_size = 60
+
+def draw_celebrative_corner(draw, x, y, size, rotation):
+    """Draw elaborate celebrative corner decoration"""
+    # Main decorative flower
+    center_radius = size // 3
+    for i in range(8):
+        angle = math.radians(i * 45 + rotation)
+        petal_x = x + center_radius * math.cos(angle)
+        petal_y = y + center_radius * math.sin(angle)
+        # Large petals
+        draw.ellipse([petal_x - 6, petal_y - 6, petal_x + 6, petal_y + 6], fill=accent_color)
     
-    if facing_right:
-        # Dove facing right (left dove)
-        # Body (oval)
-        body_width = int(80 * scale)
-        body_height = int(50 * scale)
-        draw.ellipse([x - body_width//2, y - body_height//2,
-                      x + body_width//2, y + body_height//2],
-                     fill=dove_color, outline=dove_outline, width=int(3*scale))
-        
-        # Head
-        head_radius = int(25 * scale)
-        head_x = x + int(30 * scale)
-        head_y = y - int(15 * scale)
-        draw.ellipse([head_x - head_radius, head_y - head_radius,
-                      head_x + head_radius, head_y + head_radius],
-                     fill=dove_color, outline=dove_outline, width=int(3*scale))
-        
-        # Beak
-        beak_points = [
-            (head_x + head_radius, head_y),
-            (head_x + int(15 * scale), head_y),
-            (head_x + head_radius, head_y + int(8 * scale))
-        ]
-        draw.polygon(beak_points, fill=dove_outline)
-        
-        # Wings (left wing - top)
-        wing1_points = [
-            (x - int(40 * scale), y - int(20 * scale)),
-            (x - int(60 * scale), y - int(40 * scale)),
-            (x - int(30 * scale), y - int(35 * scale)),
-            (x - int(10 * scale), y - int(25 * scale))
-        ]
-        draw.polygon(wing1_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
-        
-        # Wings (right wing - bottom)
-        wing2_points = [
-            (x - int(20 * scale), y + int(15 * scale)),
-            (x - int(50 * scale), y + int(30 * scale)),
-            (x - int(15 * scale), y + int(25 * scale)),
-            (x + int(5 * scale), y + int(20 * scale))
-        ]
-        draw.polygon(wing2_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
-        
-        # Tail
-        tail_points = [
-            (x - int(40 * scale), y),
-            (x - int(70 * scale), y - int(10 * scale)),
-            (x - int(70 * scale), y + int(10 * scale)),
-            (x - int(40 * scale), y + int(5 * scale))
-        ]
-        draw.polygon(tail_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
-        
+    # Outer decorative petals
+    for i in range(12):
+        angle = math.radians(i * 30 + rotation)
+        petal_x = x + (size // 2) * math.cos(angle)
+        petal_y = y + (size // 2) * math.sin(angle)
+        draw.ellipse([petal_x - 4, petal_y - 4, petal_x + 4, petal_y + 4], fill=frame_color)
+    
+    # Center dot
+    draw.ellipse([x - 5, y - 5, x + 5, y + 5], fill=frame_outline)
+    
+    # Small decorative dots around
+    for i in range(6):
+        angle = math.radians(i * 60 + rotation)
+        dot_x = x + (size * 0.7) * math.cos(angle)
+        dot_y = y + (size * 0.7) * math.sin(angle)
+        draw.ellipse([dot_x - 3, dot_y - 3, dot_x + 3, dot_y + 3], fill=accent_color)
+
+# Draw corners
+draw_celebrative_corner(draw, border_margin, border_margin, corner_size, 0)
+draw_celebrative_corner(draw, width - border_margin, border_margin, corner_size, 90)
+draw_celebrative_corner(draw, width - border_margin, height - border_margin, corner_size, 180)
+draw_celebrative_corner(draw, border_margin, height - border_margin, corner_size, 270)
+
+# Draw celebrative side elements (hearts, flowers, decorative patterns)
+decorative_spacing = 70
+
+def draw_small_heart(draw, x, y, size):
+    """Draw a small heart shape"""
+    # Simple heart using two circles and a triangle
+    # Left curve
+    draw.ellipse([x - size, y - size//2, x, y + size//2], fill=accent_color, outline=None)
+    # Right curve
+    draw.ellipse([x, y - size//2, x + size, y + size//2], fill=accent_color, outline=None)
+    # Bottom point
+    points = [(x, y + size//2), (x - size//2, y + size), (x + size//2, y + size)]
+    draw.polygon(points, fill=accent_color, outline=None)
+
+def draw_small_flower(draw, x, y, size):
+    """Draw a small decorative flower"""
+    for i in range(5):
+        angle = math.radians(i * 72 - 90)
+        petal_x = x + size * math.cos(angle)
+        petal_y = y + size * math.sin(angle)
+        draw.ellipse([petal_x - 3, petal_y - 3, petal_x + 3, petal_y + 3], fill=frame_color)
+    draw.ellipse([x - 2, y - 2, x + 2, y + 2], fill=accent_color)
+
+# Top border - alternating hearts and flowers
+for i in range(1, int((width - 2 * border_margin) / decorative_spacing)):
+    x_pos = border_margin + i * decorative_spacing
+    if i % 2 == 0:
+        draw_small_heart(draw, x_pos, border_margin - 5, 8)
     else:
-        # Dove facing left (right dove) - mirrored
-        # Body (oval)
-        body_width = int(80 * scale)
-        body_height = int(50 * scale)
-        draw.ellipse([x - body_width//2, y - body_height//2,
-                      x + body_width//2, y + body_height//2],
-                     fill=dove_color, outline=dove_outline, width=int(3*scale))
-        
-        # Head
-        head_radius = int(25 * scale)
-        head_x = x - int(30 * scale)
-        head_y = y - int(15 * scale)
-        draw.ellipse([head_x - head_radius, head_y - head_radius,
-                      head_x + head_radius, head_y + head_radius],
-                     fill=dove_color, outline=dove_outline, width=int(3*scale))
-        
-        # Beak
-        beak_points = [
-            (head_x - head_radius, head_y),
-            (head_x - int(15 * scale), head_y),
-            (head_x - head_radius, head_y + int(8 * scale))
-        ]
-        draw.polygon(beak_points, fill=dove_outline)
-        
-        # Wings (right wing - top)
-        wing1_points = [
-            (x + int(40 * scale), y - int(20 * scale)),
-            (x + int(60 * scale), y - int(40 * scale)),
-            (x + int(30 * scale), y - int(35 * scale)),
-            (x + int(10 * scale), y - int(25 * scale))
-        ]
-        draw.polygon(wing1_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
-        
-        # Wings (left wing - bottom)
-        wing2_points = [
-            (x + int(20 * scale), y + int(15 * scale)),
-            (x + int(50 * scale), y + int(30 * scale)),
-            (x + int(15 * scale), y + int(25 * scale)),
-            (x - int(5 * scale), y + int(20 * scale))
-        ]
-        draw.polygon(wing2_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
-        
-        # Tail
-        tail_points = [
-            (x + int(40 * scale), y),
-            (x + int(70 * scale), y - int(10 * scale)),
-            (x + int(70 * scale), y + int(10 * scale)),
-            (x + int(40 * scale), y + int(5 * scale))
-        ]
-        draw.polygon(tail_points, fill=dove_color, outline=dove_outline, width=int(2*scale))
+        draw_small_flower(draw, x_pos, border_margin - 5, 6)
+    # Add decorative dot
+    draw.ellipse([x_pos - 2, border_margin + 2, x_pos + 2, border_margin + 6], fill=accent_color)
 
-# Draw two doves facing each other
-dove_spacing = 100
-left_dove_x = center_x - dove_spacing
-right_dove_x = center_x + dove_spacing
-dove_y = center_y
+# Bottom border - alternating hearts and flowers
+for i in range(1, int((width - 2 * border_margin) / decorative_spacing)):
+    x_pos = border_margin + i * decorative_spacing
+    if i % 2 == 0:
+        draw_small_heart(draw, x_pos, height - border_margin + 5, 8)
+    else:
+        draw_small_flower(draw, x_pos, height - border_margin + 5, 6)
+    # Add decorative dot
+    draw.ellipse([x_pos - 2, height - border_margin - 6, x_pos + 2, height - border_margin - 2], fill=accent_color)
 
-# Left dove (facing right)
-draw_dove(draw, left_dove_x, dove_y, dove_size, facing_right=True)
+# Left border - decorative elements
+for i in range(1, int((height - 2 * border_margin) / decorative_spacing)):
+    y_pos = border_margin + i * decorative_spacing
+    if i % 2 == 0:
+        draw_small_flower(draw, border_margin - 5, y_pos, 6)
+    else:
+        draw.ellipse([border_margin - 8, y_pos - 4, border_margin - 2, y_pos + 4], fill=accent_color)
+    # Add decorative dot
+    draw.ellipse([border_margin + 2, y_pos - 2, border_margin + 6, y_pos + 2], fill=accent_color)
 
-# Right dove (facing left)
-draw_dove(draw, right_dove_x, dove_y, dove_size, facing_right=False)
+# Right border - decorative elements
+for i in range(1, int((height - 2 * border_margin) / decorative_spacing)):
+    y_pos = border_margin + i * decorative_spacing
+    if i % 2 == 0:
+        draw_small_flower(draw, width - border_margin + 5, y_pos, 6)
+    else:
+        draw.ellipse([width - border_margin + 2, y_pos - 4, width - border_margin + 8, y_pos + 4], fill=accent_color)
+    # Add decorative dot
+    draw.ellipse([width - border_margin - 6, y_pos - 2, width - border_margin - 2, y_pos + 2], fill=accent_color)
 
-# Add a small decorative element between them (optional - a small heart or decorative line)
-# Simple decorative line connecting them
-decorative_y = dove_y - int(30)
-draw.line([(left_dove_x + 50, decorative_y), (right_dove_x - 50, decorative_y)],
-          fill=gold_rgb, width=2)
+# Center position for text (inside the border)
+center_x = width // 2
+center_y = height // 2
 
-# Add small gold accents
-for x_pos in [left_dove_x - 30, right_dove_x + 30]:
-    draw.ellipse([x_pos - 3, decorative_y - 3, x_pos + 3, decorative_y + 3], fill=gold_rgb)
+# Try to load elegant fonts
+try:
+    font_paths = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSerif-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
+    ]
+    
+    main_font = None
+    font_size_main = 85  # Smaller font size
+    
+    for font_path in font_paths:
+        try:
+            main_font = ImageFont.truetype(font_path, font_size_main)
+            break
+        except:
+            continue
+    
+    if main_font is None:
+        main_font = ImageFont.load_default()
+        font_size_main = 50
+except:
+    main_font = ImageFont.load_default()
+    font_size_main = 50
 
-# Add subtle decorative elements (cashew-colored dots)
-dot_rgb = hex_to_rgb(CASHEW_PRIMARY)
-# Corner dots for elegance
-draw.ellipse([150, 100, 160, 110], fill=dot_rgb)  # Top left
-draw.ellipse([1040, 100, 1050, 110], fill=dot_rgb)  # Top right
-draw.ellipse([150, 520, 160, 530], fill=dot_rgb)  # Bottom left
-draw.ellipse([1040, 520, 1050, 530], fill=dot_rgb)  # Bottom right
+# Text to display
+text = "Happy Wedding!"
+
+# Get text dimensions
+bbox = draw.textbbox((0, 0), text, font=main_font)
+text_width = bbox[2] - bbox[0]
+text_height = bbox[3] - bbox[1]
+
+# Center the text (inside border)
+text_x = center_x - text_width // 2
+text_y = center_y - text_height // 2
+
+# Draw elegant text with subtle shadow
+shadow_offset = 5
+
+# Text shadow (multiple layers for depth)
+for offset in range(1, shadow_offset + 1):
+    for dx in [-offset, 0, offset]:
+        for dy in [-offset, 0, offset]:
+            if dx != 0 or dy != 0:
+                draw.text((text_x + dx, text_y + dy), text, fill=(220, 215, 200), font=main_font)
+
+# Main text
+draw.text((text_x, text_y), text, fill=text_color, font=main_font)
+
+# Add small celebrative elements around text (smaller and closer to text)
+for i in range(4):
+    angle = math.radians(i * 90 - 45)
+    element_x = center_x + 140 * math.cos(angle)  # Closer to text
+    element_y = center_y + 70 * math.sin(angle)    # Closer to text
+    if i % 2 == 0:
+        draw_small_heart(draw, int(element_x), int(element_y), 8)  # Smaller
+    else:
+        draw_small_flower(draw, int(element_x), int(element_y), 6)   # Smaller
 
 # Save image
 output_path = 'assets/share.jpg'
 img.save(output_path, 'JPEG', quality=95, optimize=True)
 print(f"✓ Generated {output_path} successfully!")
 print(f"  Size: {width}x{height}px")
-print(f"  Design: Two doves symbol with cashew colors")
+print(f"  Design: Celebrative border with 'Happy Wedding!' text")
 print(f"  Ready for WhatsApp sharing!")
