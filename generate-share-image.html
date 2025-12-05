@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Share Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 2px solid #ddd;
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 24px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #c2185b;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WhatsApp Share Image Generator</h1>
+        <canvas id="shareCanvas" width="1200" height="630"></canvas>
+        <button onclick="downloadImage()">Download as JPG</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('shareCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+        gradient.addColorStop(0, '#fff5f5');
+        gradient.addColorStop(1, '#ffe0e0');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1200, 630);
+
+        // Draw heart shape
+        function drawHeart(x, y, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(size / 200, size / 200);
+            
+            // Heart path
+            ctx.beginPath();
+            ctx.moveTo(0, -100);
+            ctx.bezierCurveTo(-50, -150, -150, -150, -150, -50);
+            ctx.bezierCurveTo(-150, 25, -50, 125, 0, 200);
+            ctx.bezierCurveTo(50, 125, 150, 25, 150, -50);
+            ctx.bezierCurveTo(150, -150, 50, -150, 0, -100);
+            
+            // Shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 8;
+            
+            // Fill heart
+            ctx.fillStyle = '#e91e63';
+            ctx.fill();
+            
+            // Stroke
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#c2185b';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        // Draw NH text
+        function drawText() {
+            ctx.save();
+            ctx.translate(600, 315);
+            
+            // Text shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 140px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.letterSpacing = '8px';
+            ctx.fillText('NH', 0, 30);
+            
+            ctx.restore();
+        }
+
+        // Draw decorative dots
+        function drawDots() {
+            ctx.fillStyle = '#e91e63';
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.arc(200, 150, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(1000, 480, 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.globalAlpha = 0.2;
+            ctx.beginPath();
+            ctx.arc(150, 500, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(1050, 130, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.globalAlpha = 1;
+        }
+
+        // Draw everything
+        drawHeart(600, 315, 400);
+        drawText();
+        drawDots();
+
+        // Download function
+        function downloadImage() {
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'share.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/jpeg', 0.95);
+        }
+    </script>
+</body>
+</html>
+
