@@ -408,16 +408,18 @@ const musicButton = `
 // Custom Google Form Submission Handler
 function initCustomRSVPForm() {
     const form = document.getElementById('custom-rsvp-form');
-    if (!form) return;
+    if (!form) {
+        return;
+    }
+    
+    // Prevent double initialization
+    if (form.hasAttribute('data-handler-attached')) {
+        return;
+    }
+    form.setAttribute('data-handler-attached', 'true');
 
-    // Google Form endpoint and entry IDs (verified from form structure)
-    const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSeBQU91NaduWyIlPcv9bvi68wwDiBFOABbEkFS7-Wv5shAfHA/formResponse';
-    const ENTRY_IDS = {
-        attendance: 'entry.2114599373',
-        guestSide: 'entry.1795612852',
-        guestCount: 'entry.1636779595',
-        specialMessage: 'entry.1564302628'
-    };
+    // Google Apps Script Web App URL
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaXM3I5tzS27Q-7QbsEBnD2Ubrpb_KC6oBqAPQRCFQqXtvaXJcTSa5xGaZZ8DpHuscTA/exec';
 
     // Form validation
     function validateForm() {
@@ -486,10 +488,21 @@ function initCustomRSVPForm() {
         }
     });
 
-    // Form submission handler
+    // Form submission handler - use capture phase and ensure preventDefault works
     form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        // CRITICAL: Prevent default form submission
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        }
+        if (e.stopImmediatePropagation) {
+            e.stopImmediatePropagation();
+        }
+        
+        // Also prevent default by returning false
+        e.returnValue = false;
 
         // Hide previous messages
         const successMsg = document.getElementById('form-success');
@@ -538,9 +551,13 @@ function initCustomRSVPForm() {
         }
 
         // Function to handle error
-        function handleError() {
+        function handleError(errorMessage) {
             // Show error message
             if (errorMsg) {
+                const errorText = errorMsg.querySelector('p');
+                if (errorText && errorMessage) {
+                    errorText.textContent = errorMessage;
+                }
                 errorMsg.style.display = 'block';
                 errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
@@ -553,112 +570,86 @@ function initCustomRSVPForm() {
             }
         }
 
-        // Create a unique iframe name for this submission
-        const iframeName = 'google-form-submit-' + Date.now();
-        
-        // Create hidden iframe
-        const iframe = document.createElement('iframe');
-        iframe.name = iframeName;
-        iframe.id = iframeName;
-        iframe.style.position = 'absolute';
-        iframe.style.left = '-9999px';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.border = 'none';
-        document.body.appendChild(iframe);
-
-        // Create hidden form for submission
-        const hiddenForm = document.createElement('form');
-        hiddenForm.method = 'POST';
-        hiddenForm.action = GOOGLE_FORM_URL;
-        hiddenForm.target = iframeName;
-        hiddenForm.style.display = 'none';
-        hiddenForm.enctype = 'application/x-www-form-urlencoded';
-        hiddenForm.acceptCharset = 'UTF-8';
-
-        // Add form fields
-        const fields = [
-            { name: ENTRY_IDS.attendance, value: attendance },
-            { name: ENTRY_IDS.guestSide, value: guestSide },
-            { name: ENTRY_IDS.guestCount, value: guestCount },
-            { name: ENTRY_IDS.specialMessage, value: specialMessage }
-        ];
-
-        fields.forEach(function(field) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = field.name;
-            input.value = field.value;
-            hiddenForm.appendChild(input);
-        });
-
-        document.body.appendChild(hiddenForm);
-
-        // Track if success was handled
-        let successHandled = false;
-
-        // Listen for iframe load (indicates submission completed)
-        iframe.onload = function() {
-            // Wait a bit for Google Forms to process
-            setTimeout(function() {
-                if (!successHandled) {
-                    successHandled = true;
-                    // Clean up
-                    setTimeout(function() {
-                        if (hiddenForm.parentNode) {
-                            hiddenForm.parentNode.removeChild(hiddenForm);
-                        }
-                        if (iframe.parentNode) {
-                            iframe.parentNode.removeChild(iframe);
-                        }
-                    }, 100);
-                    // Show success
-                    handleSuccess();
-                }
-            }, 1500);
-        };
-
-        // Fallback timeout - assume success after 2.5 seconds
-        setTimeout(function() {
-            if (!successHandled) {
-                successHandled = true;
-                // Clean up
-                setTimeout(function() {
-                    if (hiddenForm.parentNode) {
-                        hiddenForm.parentNode.removeChild(hiddenForm);
-                    }
-                    if (iframe.parentNode) {
-                        iframe.parentNode.removeChild(iframe);
-                    }
-                }, 100);
-                // Assume success (Google Forms accepts submissions even if we can't verify)
-                handleSuccess();
-            }
-        }, 2500);
-
-        // Submit the form
-        try {
-            hiddenForm.submit();
-        } catch (err) {
-            console.error('Form submission error:', err);
-            // Clean up on error
-            if (hiddenForm.parentNode) {
-                hiddenForm.parentNode.removeChild(hiddenForm);
-            }
-            if (iframe.parentNode) {
-                iframe.parentNode.removeChild(iframe);
-            }
-            if (!successHandled) {
-                successHandled = true;
-                handleError();
-            }
+        // Check if Google Script URL is configured
+        if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' || !GOOGLE_SCRIPT_URL.startsWith('https://script.google.com')) {
+            handleError('Google Apps Script URL is not configured. Please see GOOGLE_APPS_SCRIPT_SETUP.md for instructions.');
+            return false;
         }
 
+        // Prepare data to send
+        const formData = {
+            attendance: attendance,
+            guestSide: guestSide,
+            guestCount: guestCount,
+            specialMessage: specialMessage
+        };
+
+        // Submit to Google Apps Script using fetch with CORS
+        // Note: Make sure your Google Apps Script deployment allows "Anyone" access
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors', // Try CORS first - Google Apps Script supports it
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(function(response) {
+            // Try to read response if CORS is enabled
+            if (response.ok) {
+                return response.json().catch(function() {
+                    // If response isn't JSON, that's okay - Google Apps Script might return text
+                    return { status: 'success' };
+                });
+            } else {
+                throw new Error('Server responded with error');
+            }
+        })
+        .then(function(data) {
+            // Success - data was saved
+            handleSuccess();
+        })
+        .catch(function(error) {
+            console.error('Form submission error:', error);
+            // Fallback: Try with no-cors mode (can't verify success, but will attempt submission)
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(function() {
+                // Assume success with no-cors (can't verify)
+                handleSuccess();
+            })
+            .catch(function(fallbackError) {
+                console.error('Fallback submission also failed:', fallbackError);
+                handleError('Failed to submit form. Please try again or contact us directly.');
+            });
+        });
+
+        // Return false to prevent any default behavior
         return false;
-    });
+    }, true); // Use capture phase to catch event early
 }
 
 // Initialize custom form when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        initCustomRSVPForm();
+    });
+} else {
+    // DOM is already loaded
     initCustomRSVPForm();
-});
+}
+
+// Also try to initialize immediately (in case form is added dynamically)
+setTimeout(function() {
+    const form = document.getElementById('custom-rsvp-form');
+    if (form && !form.hasAttribute('data-initialized')) {
+        form.setAttribute('data-initialized', 'true');
+        initCustomRSVPForm();
+    }
+}, 100);
