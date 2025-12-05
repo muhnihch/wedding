@@ -404,3 +404,64 @@ const musicButton = `
 
 // Uncomment to add music player
 // document.body.insertAdjacentHTML('beforeend', musicButton);
+
+// Auto-resize Google Form iframe to fit content
+function resizeGoogleFormIframe() {
+    const iframe = document.querySelector('.google-form-iframe');
+    if (!iframe) return;
+    
+    // Listen for messages from Google Forms (they send height updates)
+    window.addEventListener('message', function(event) {
+        // Verify the message is from Google Forms
+        if (event.origin !== 'https://docs.google.com') return;
+        
+        // Check if message contains height information
+        if (event.data && typeof event.data === 'object' && event.data['scrollHeight']) {
+            const newHeight = event.data['scrollHeight'];
+            if (newHeight && newHeight > 0) {
+                iframe.style.height = newHeight + 'px';
+            }
+        }
+    });
+    
+    // Fallback: Set a reasonable height based on form structure
+    // The form has 4 questions + submit button, so around 650px should work
+    // Desktop: 650px, Mobile: 550px
+    if (window.innerWidth <= 768) {
+        iframe.style.height = '550px';
+    } else {
+        iframe.style.height = '650px';
+    }
+    
+    // Try to get iframe content height (may be blocked by CORS)
+    try {
+        iframe.onload = function() {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const body = iframeDoc.body;
+                const html = iframeDoc.documentElement;
+                const height = Math.max(
+                    body.scrollHeight, body.offsetHeight,
+                    html.clientHeight, html.scrollHeight, html.offsetHeight
+                );
+                if (height > 0) {
+                    iframe.style.height = (height + 50) + 'px'; // Add some padding
+                }
+            } catch (e) {
+                // CORS may block access, use default height
+                console.log('Cannot access iframe content (CORS), using default height');
+            }
+        };
+    } catch (e) {
+        // Iframe may not be loaded yet
+    }
+}
+
+// Initialize iframe resizing when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    resizeGoogleFormIframe();
+    
+    // Also try after a delay to ensure iframe is loaded
+    setTimeout(resizeGoogleFormIframe, 1000);
+    setTimeout(resizeGoogleFormIframe, 3000);
+});
