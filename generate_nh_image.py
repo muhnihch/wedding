@@ -1,117 +1,110 @@
 #!/usr/bin/env python3
 """
-Generate a simple share image with 'NH' inside a heart for WhatsApp sharing.
+Generate a simple share image with wedding symbol for WhatsApp sharing.
+Uses cashew/wedding colors - no text, just symbol.
 """
 
 from PIL import Image, ImageDraw, ImageFont
 import math
 
+def hex_to_rgb(hex_color):
+    """Convert hex color to RGB tuple"""
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
+# Wedding/cashew color scheme
+CASHEW_LIGHT = '#f5f0e8'  # Light beige background
+CASHEW_MEDIUM = '#fbf5e8'  # Medium beige
+CASHEW_PRIMARY = '#d4b896'  # Primary cashew color
+CASHEW_DARK = '#b8956f'  # Darker cashew
+GOLD = '#D4AF37'  # Gold accent
+
 # Create image (1200x630 for WhatsApp)
 width, height = 1200, 630
-img = Image.new('RGB', (width, height), color='#fff5f5')
+img = Image.new('RGB', (width, height), color=CASHEW_LIGHT)
 
-# Create gradient background
+# Create gradient background (warm beige gradient)
 draw = ImageDraw.Draw(img)
 for y in range(height):
     ratio = y / height
-    r = int(255 - (255 - 224) * ratio)
-    g = int(245 - (245 - 224) * ratio)
-    b = int(245 - (245 - 224) * ratio)
+    # Interpolate between light and medium cashew
+    r1, g1, b1 = 245, 240, 232  # #f5f0e8
+    r2, g2, b2 = 251, 245, 232  # #fbf5e8
+    r = int(r1 + (r2 - r1) * ratio)
+    g = int(g1 + (g2 - g1) * ratio)
+    b = int(b1 + (b2 - b1) * ratio)
     draw.line([(0, y), (width, y)], fill=(r, g, b))
 
-# Draw heart shape using a better algorithm
-def draw_heart(draw, center_x, center_y, size, fill_color, outline_color):
-    """Draw a heart shape using a simple, recognizable heart path"""
-    # Create heart shape using two circles and a triangle
-    # This creates a more recognizable heart shape
-    scale = size / 200.0
-    
-    # Left circle (top left of heart)
-    left_circle_center_x = center_x - 50 * scale
-    left_circle_center_y = center_y - 80 * scale
-    left_radius = 60 * scale
-    
-    # Right circle (top right of heart)
-    right_circle_center_x = center_x + 50 * scale
-    right_circle_center_y = center_y - 80 * scale
-    right_radius = 60 * scale
-    
-    # Bottom point of heart
-    bottom_x = center_x
-    bottom_y = center_y + 100 * scale
-    
-    # Draw using a polygon approximation
-    points = []
-    # Left arc
-    for angle in range(180, 360, 5):
+# Draw wedding rings symbol (two interlocking rings)
+center_x, center_y = width // 2, height // 2
+ring_radius = 120
+ring_thickness = 20
+ring_spacing = 40  # Distance between ring centers
+
+# Convert colors to RGB
+ring_color = hex_to_rgb(CASHEW_PRIMARY)
+ring_outline = hex_to_rgb(CASHEW_DARK)
+gold_rgb = hex_to_rgb(GOLD)
+
+# Left ring
+left_ring_center_x = center_x - ring_spacing // 2
+draw.ellipse([left_ring_center_x - ring_radius, center_y - ring_radius,
+               left_ring_center_x + ring_radius, center_y + ring_radius],
+              fill=None, outline=ring_outline, width=ring_thickness)
+
+# Right ring (interlocking with left)
+right_ring_center_x = center_x + ring_spacing // 2
+draw.ellipse([right_ring_center_x - ring_radius, center_y - ring_radius,
+               right_ring_center_x + ring_radius, center_y + ring_radius],
+              fill=None, outline=ring_outline, width=ring_thickness)
+
+# Fill the visible parts of rings with cashew color
+# Left ring (top and bottom parts visible)
+for angle in range(0, 180, 2):
+    rad = math.radians(angle)
+    x1 = left_ring_center_x + (ring_radius - ring_thickness//2) * math.cos(rad)
+    y1 = center_y + (ring_radius - ring_thickness//2) * math.sin(rad)
+    x2 = left_ring_center_x + (ring_radius + ring_thickness//2) * math.cos(rad)
+    y2 = center_y + (ring_radius + ring_thickness//2) * math.sin(rad)
+    draw.line([(x1, y1), (x2, y2)], fill=ring_color, width=3)
+
+# Right ring (top and bottom parts visible)
+for angle in range(0, 180, 2):
+    rad = math.radians(angle)
+    x1 = right_ring_center_x + (ring_radius - ring_thickness//2) * math.cos(rad)
+    y1 = center_y + (ring_radius - ring_thickness//2) * math.sin(rad)
+    x2 = right_ring_center_x + (ring_radius + ring_thickness//2) * math.cos(rad)
+    y2 = center_y + (ring_radius + ring_thickness//2) * math.sin(rad)
+    draw.line([(x1, y1), (x2, y2)], fill=ring_color, width=3)
+
+# Add gold accents on the rings
+for i, ring_x in enumerate([left_ring_center_x, right_ring_center_x]):
+    # Top accent
+    for angle in range(45, 135, 3):
         rad = math.radians(angle)
-        x = left_circle_center_x + left_radius * math.cos(rad)
-        y = left_circle_center_y + left_radius * math.sin(rad)
-        points.append((int(x), int(y)))
+        x = ring_x + ring_radius * math.cos(rad)
+        y = center_y - ring_radius * math.sin(rad)
+        draw.ellipse([x-3, y-3, x+3, y+3], fill=gold_rgb)
     
-    # Right arc
-    for angle in range(0, 180, 5):
+    # Bottom accent
+    for angle in range(225, 315, 3):
         rad = math.radians(angle)
-        x = right_circle_center_x + right_radius * math.cos(rad)
-        y = right_circle_center_y + right_radius * math.sin(rad)
-        points.append((int(x), int(y)))
-    
-    # Add bottom point
-    points.append((int(bottom_x), int(bottom_y)))
-    
-    # Draw filled heart
-    draw.polygon(points, fill=fill_color)
-    
-    # Draw outline
-    points.append(points[0])  # Close the path
-    draw.line(points, fill=outline_color, width=8)
+        x = ring_x + ring_radius * math.cos(rad)
+        y = center_y - ring_radius * math.sin(rad)
+        draw.ellipse([x-3, y-3, x+3, y+3], fill=gold_rgb)
 
-# Draw heart at center
-heart_size = 400
-heart_x, heart_y = width // 2, height // 2
-draw_heart(draw, heart_x, heart_y, heart_size, '#e91e63', '#c2185b')
-
-# Draw "NH" text inside heart
-try:
-    # Try to use a bold system font
-    font_size = 140
-    try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
-    except:
-        try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", font_size)
-        except:
-            # Fallback to default font
-            font = ImageFont.load_default()
-except:
-    font = ImageFont.load_default()
-
-# Get text dimensions for centering
-text = "NH"
-bbox = draw.textbbox((0, 0), text, font=font)
-text_width = bbox[2] - bbox[0]
-text_height = bbox[3] - bbox[1]
-
-# Draw text with shadow effect
-text_x = heart_x - text_width // 2
-text_y = heart_y - text_height // 2 + 30
-
-# Shadow
-draw.text((text_x + 3, text_y + 3), text, fill='rgba(0,0,0,100)', font=font)
-# Main text
-draw.text((text_x, text_y), text, fill='#ffffff', font=font)
-
-# Add subtle decorative dots
-dot_color = (233, 30, 99)  # #e91e63
-draw.ellipse([197, 147, 203, 153], fill=dot_color + (76,))  # 30% opacity
-draw.ellipse([997, 477, 1003, 483], fill=dot_color + (76,))
-draw.ellipse([148, 498, 152, 502], fill=dot_color + (51,))  # 20% opacity
-draw.ellipse([1048, 128, 1052, 132], fill=dot_color + (51,))
+# Add subtle decorative elements (cashew-colored dots)
+dot_rgb = hex_to_rgb(CASHEW_PRIMARY)
+# Corner dots for elegance
+draw.ellipse([150, 100, 160, 110], fill=dot_rgb)  # Top left
+draw.ellipse([1040, 100, 1050, 110], fill=dot_rgb)  # Top right
+draw.ellipse([150, 520, 160, 530], fill=dot_rgb)  # Bottom left
+draw.ellipse([1040, 520, 1050, 530], fill=dot_rgb)  # Bottom right
 
 # Save image
 output_path = 'assets/share.jpg'
 img.save(output_path, 'JPEG', quality=95, optimize=True)
 print(f"✓ Generated {output_path} successfully!")
 print(f"  Size: {width}x{height}px")
+print(f"  Design: Wedding rings symbol with cashew colors")
 print(f"  Ready for WhatsApp sharing!")
-
