@@ -138,14 +138,14 @@ function createFloatingHeart() {
     // Detect if mobile
     const isMobile = window.innerWidth <= 768;
     
-    // Much slower animation on mobile (15s instead of 6s)
-    const animationDuration = isMobile ? 15 : 6;
+    // Much slower animation speed on mobile (25s for smooth, visible movement)
+    const animationDuration = isMobile ? 25 : 6;
     const travelDistance = isMobile ? '-70vh' : '-100vh'; // Less distance on mobile
     const rotationSpeed = isMobile ? 180 : 360; // Slower rotation on mobile
     
     heart.style.cssText = `
         position: fixed;
-        font-size: ${isMobile ? '16px' : '20px'};
+        font-size: ${isMobile ? '18px' : '20px'};
         color: var(--primary-color);
         pointer-events: none;
         z-index: 1000;
@@ -181,24 +181,34 @@ style.textContent = `
         }
     }
     
-    /* Much slower, smoother animation on mobile */
+    /* Much slower, smoother animation on mobile - hearts move very slowly for better visibility */
     @keyframes floatUpMobile {
         0% {
             transform: translateY(0) rotate(0deg);
             opacity: 1;
         }
-        20% {
+        10% {
+            opacity: 1;
+            transform: translateY(-5vh) rotate(10deg);
+        }
+        25% {
             opacity: 0.95;
+            transform: translateY(-15vh) rotate(30deg);
         }
         50% {
             opacity: 0.9;
-            transform: translateY(-35vh) rotate(90deg);
+            transform: translateY(-35vh) rotate(60deg);
         }
-        80% {
-            opacity: 0.7;
+        75% {
+            opacity: 0.8;
+            transform: translateY(-55vh) rotate(90deg);
+        }
+        90% {
+            opacity: 0.6;
+            transform: translateY(-65vh) rotate(120deg);
         }
         to {
-            transform: translateY(-70vh) rotate(180deg);
+            transform: translateY(-70vh) rotate(150deg);
             opacity: 0;
         }
     }
