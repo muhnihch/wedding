@@ -130,36 +130,56 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Device detection function - works for phones, tablets, and desktop
+function getDeviceType() {
+    const width = window.innerWidth;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const ua = navigator.userAgent.toLowerCase();
+    const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(ua) || (width >= 768 && width <= 1024 && isTouchDevice);
+    const isPhone = width < 768 || /mobile|phone|android(?!.*tablet)|iphone|ipod/i.test(ua);
+    const isDesktop = width > 1024 && !isTouchDevice;
+    
+    return {
+        isPhone: isPhone,
+        isTablet: isTablet,
+        isDesktop: isDesktop,
+        isMobile: isPhone || isTablet,
+        isTouch: isTouchDevice,
+        width: width
+    };
+}
+
 // Add floating hearts animation
 function createFloatingHeart() {
     const heart = document.createElement('div');
     heart.innerHTML = '💕';
     
-    // Force mobile detection - check multiple methods for mobile browsers
-    const isMobileWidth = window.innerWidth <= 768;
-    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent);
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const isMobile = isMobileWidth || isMobileUA || isTouchDevice;
+    // Get device type for optimal settings
+    const device = getDeviceType();
     
-    // Optimized animation speed on mobile (60s = 5x faster than previous 300s)
-    // Always use mobile animation if any mobile indicator is present
-    const animationDuration = isMobile ? 60 : 6;
-    const animationName = isMobile ? 'floatUpMobile' : 'floatUp';
-    
-    // Debug log to help troubleshoot
-    console.log('Heart animation:', {
-        isMobile: isMobile,
-        width: window.innerWidth,
-        ua: navigator.userAgent.substring(0, 50),
-        duration: animationDuration + 's',
-        animation: animationName
-    });
+    // Optimized animation speeds for different devices
+    let animationDuration, animationName;
+    if (device.isPhone) {
+        // Phones: 60s for smooth, visible movement
+        animationDuration = 60;
+        animationName = 'floatUpMobile';
+    } else if (device.isTablet) {
+        // Tablets: 30s - faster than phones, slower than desktop
+        animationDuration = 30;
+        animationName = 'floatUpMobile';
+    } else {
+        // Desktop: 6s - fast and smooth
+        animationDuration = 6;
+        animationName = 'floatUp';
+    }
     
     heart.style.cssText = `
         position: fixed;
         font-size: ${isMobile ? '18px' : '20px'};
         color: var(--primary-color);
         pointer-events: none;
+        touch-action: none;
+        will-change: transform, opacity;
         z-index: 1000;
         animation: ${animationName} ${animationDuration}s ease-in-out forwards !important;
     `;
@@ -253,11 +273,35 @@ style.textContent = `
         }
     }
     
-    /* Force optimized animation speed on mobile devices using CSS media query as backup */
-    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+    /* Optimized animation speeds for different devices */
+    /* Phones */
+    @media (max-width: 767px) {
         [style*="floatUp"] {
             animation-duration: 60s !important;
         }
+    }
+    
+    /* Tablets */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        [style*="floatUp"] {
+            animation-duration: 30s !important;
+        }
+    }
+    
+    /* Touch devices */
+    @media (hover: none) and (pointer: coarse) {
+        [style*="floatUp"] {
+            animation-duration: 60s !important;
+        }
+    }
+    
+    /* Ensure hearts don't interfere with scrolling on any device */
+    [style*="floatUp"] {
+        touch-action: none !important;
+        pointer-events: none !important;
+        will-change: transform, opacity;
+        -webkit-transform: translateZ(0); /* Hardware acceleration */
+        transform: translateZ(0);
     }
 `;
 document.head.appendChild(style);
@@ -337,40 +381,52 @@ function handleMobileSecurity() {
     }
 }
 
-// Mobile-specific improvements
+// Device-specific improvements for phones, tablets, and desktop
 function initMobileFeatures() {
-    const isMobile = window.innerWidth <= 768;
+    const device = getDeviceType();
     
-    if (isMobile) {
-        // Reduce floating hearts frequency on mobile for better performance
-        clearInterval(heartInterval);
-        heartInterval = setInterval(createFloatingHeart, 30000); // Very slow on mobile (30 seconds between hearts)
-        
+    // Adjust heart frequency based on device type
+    clearInterval(heartInterval);
+    if (device.isPhone) {
+        // Phones: Less frequent hearts for better performance
+        heartInterval = setInterval(createFloatingHeart, 30000); // 30 seconds between hearts
+    } else if (device.isTablet) {
+        // Tablets: Moderate frequency
+        heartInterval = setInterval(createFloatingHeart, 15000); // 15 seconds between hearts
+    } else {
+        // Desktop: More frequent hearts
+        heartInterval = setInterval(createFloatingHeart, 3000); // 3 seconds between hearts
+    }
+    
+    // Add touch feedback for all touch devices (phones and tablets)
+    if (device.isTouch) {
         // Add touch feedback for buttons
         const touchElements = document.querySelectorAll('.cta-button, .detail-button, .submit-button, .form-link');
         touchElements.forEach(element => {
             element.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(0.95)';
-            });
+            }, { passive: true });
             
             element.addEventListener('touchend', function() {
                 this.style.transform = 'scale(1)';
-            });
+            }, { passive: true });
         });
         
-        // Optimize countdown for mobile
+        // Optimize countdown for touch devices
         const countdownItems = document.querySelectorAll('.countdown-item');
         countdownItems.forEach(item => {
             item.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(1.05)';
-            });
+            }, { passive: true });
             
             item.addEventListener('touchend', function() {
                 this.style.transform = 'scale(1)';
-            });
+            }, { passive: true });
         });
-        
-        // Improve form experience on mobile
+    }
+    
+    // Improve form experience on all mobile devices
+    if (device.isMobile) {
         const formInputs = document.querySelectorAll('input, select, textarea');
         formInputs.forEach(input => {
             input.addEventListener('focus', function() {
@@ -378,7 +434,7 @@ function initMobileFeatures() {
                 setTimeout(() => {
                     this.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 100);
-            });
+            }, { passive: true });
         });
     }
 }
@@ -394,12 +450,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 window.addEventListener('resize', initMobileFeatures);
 
-// Prevent iOS safari bounce effect while allowing normal scrolling
+// Optimize touch scrolling for all devices
+// Only prevent default on pinch zoom, allow normal scrolling
 document.addEventListener('touchmove', function(e) {
-    if (e.scale !== 1) {
+    // Only prevent default if it's a pinch zoom gesture (2+ touches)
+    // This allows smooth scrolling on all touch devices
+    if (e.touches && e.touches.length > 1) {
         e.preventDefault();
     }
-}, { passive: false });
+}, { passive: true }); // Passive: true improves scroll performance on all devices
 
 // Optimize performance on mobile
 if (window.innerWidth <= 768) {

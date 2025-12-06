@@ -30,8 +30,17 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on all devices */
+    touch-action: pan-y pinch-zoom; /* Allow vertical scroll and pinch zoom */
     font-size: 18px;
     background: var(--background-light);
+}
+
+html {
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y pinch-zoom;
+    scroll-behavior: smooth;
 }
 
 .container {
