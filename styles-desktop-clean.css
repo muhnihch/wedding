@@ -79,6 +79,28 @@ body {
     overflow: hidden;
 }
 
+/* Responsive background sizing for different screen sizes */
+@media (max-width: 1920px) {
+    .hero {
+        background-size: cover;
+        background-position: center center;
+    }
+}
+
+@media (max-width: 1440px) {
+    .hero {
+        background-size: cover;
+        background-position: center 30%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        background-attachment: scroll; /* Better performance on tablets */
+        background-position: center 40%;
+    }
+}
+
 /* Overlay for text readability */
 .hero-overlay {
     position: absolute;
