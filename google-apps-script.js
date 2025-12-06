@@ -19,52 +19,50 @@
 
 function doPost(e) {
   try {
-    // Get the spreadsheet
-    const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    // Log the request for debugging
+    Logger.log('Received POST request');
+    Logger.log('Parameters: ' + JSON.stringify(e.parameter));
+    Logger.log('PostData: ' + JSON.stringify(e.postData));
     
-    // Try to get "Form responses" sheet, or fall back to active sheet
-    let sheet;
-    try {
-      sheet = spreadsheet.getSheetByName('Form responses');
-      if (!sheet) {
-        // If "Form responses" doesn't exist, use the active sheet
-        sheet = spreadsheet.getActiveSheet();
+    // Get the spreadsheet by ID (more reliable)
+    const SPREADSHEET_ID = '1Eqjq5ZLCRijHjilFpARHwA4mVAzeZL3ljCcHsWacMO4';
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    
+    // Try to get the active sheet (first sheet)
+    let sheet = spreadsheet.getActiveSheet();
+    
+    // Log sheet name for debugging
+    Logger.log('Using sheet: ' + sheet.getName());
+    
+    // Parse the POST data - handle form-encoded data
+    let data = {};
+    
+    // Google Apps Script receives form data in e.parameter
+    if (e.parameter) {
+      data = {
+        attendance: e.parameter.attendance || '',
+        guestSide: e.parameter.guestSide || '',
+        guestCount: e.parameter.guestCount || '',
+        specialMessage: e.parameter.specialMessage || ''
+      };
+    } else if (e.postData && e.postData.contents) {
+      // Try JSON if available
+      try {
+        data = JSON.parse(e.postData.contents);
+      } catch (parseError) {
+        Logger.log('Error parsing JSON: ' + parseError.toString());
+        throw new Error('Failed to parse request data');
       }
-    } catch (e) {
-      // Fallback to active sheet if there's any error
-      sheet = spreadsheet.getActiveSheet();
+    } else {
+      throw new Error('No data received in request');
     }
     
-    // Parse the POST data - handle both JSON and form-encoded
-    let data;
-    try {
-      if (e.postData && e.postData.contents) {
-        data = JSON.parse(e.postData.contents);
-      } else if (e.parameter) {
-        // Form-encoded data
-        data = {
-          attendance: e.parameter.attendance || '',
-          guestSide: e.parameter.guestSide || '',
-          guestCount: e.parameter.guestCount || '',
-          specialMessage: e.parameter.specialMessage || ''
-        };
-      } else {
-        throw new Error('No data received');
-      }
-    } catch (parseError) {
-      // Log error for debugging
-      console.error('Error parsing data:', parseError);
-      // Try to get data from parameters as fallback
-      if (e.parameter) {
-        data = {
-          attendance: e.parameter.attendance || '',
-          guestSide: e.parameter.guestSide || '',
-          guestCount: e.parameter.guestCount || '',
-          specialMessage: e.parameter.specialMessage || ''
-        };
-      } else {
-        throw new Error('Failed to parse request data: ' + parseError.toString());
-      }
+    // Log the parsed data
+    Logger.log('Parsed data: ' + JSON.stringify(data));
+    
+    // Validate required fields
+    if (!data.attendance || !data.guestSide || !data.guestCount) {
+      throw new Error('Missing required fields');
     }
     
     // Get current timestamp
@@ -84,18 +82,28 @@ function doPost(e) {
       data.specialMessage || ''
     ];
     
+    // Log before appending
+    Logger.log('Appending row: ' + JSON.stringify(rowData));
+    
     // Append the row to the sheet
     sheet.appendRow(rowData);
     
-    // Return success response (CORS is handled automatically by Google Apps Script when deployed as web app)
+    Logger.log('Row appended successfully');
+    
+    // Return success response with CORS headers
     return ContentService
       .createTextOutput(JSON.stringify({
         'status': 'success',
-        'message': 'Data saved successfully'
+        'message': 'Data saved successfully',
+        'timestamp': timestamp.toString()
       }))
       .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
+    // Log the error
+    Logger.log('Error: ' + error.toString());
+    Logger.log('Stack: ' + error.stack);
+    
     // Return error response
     return ContentService
       .createTextOutput(JSON.stringify({
