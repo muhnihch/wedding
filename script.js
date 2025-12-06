@@ -138,17 +138,18 @@ function createFloatingHeart() {
     // Detect if mobile
     const isMobile = window.innerWidth <= 768;
     
-    // Slower animation on mobile (8s instead of 4s)
-    const animationDuration = isMobile ? 8 : 6;
-    const travelDistance = isMobile ? '-80vh' : '-100vh'; // Less distance on mobile
+    // Much slower animation on mobile (15s instead of 6s)
+    const animationDuration = isMobile ? 15 : 6;
+    const travelDistance = isMobile ? '-70vh' : '-100vh'; // Less distance on mobile
+    const rotationSpeed = isMobile ? 180 : 360; // Slower rotation on mobile
     
     heart.style.cssText = `
         position: fixed;
-        font-size: ${isMobile ? '18px' : '20px'};
+        font-size: ${isMobile ? '16px' : '20px'};
         color: var(--primary-color);
         pointer-events: none;
         z-index: 1000;
-        animation: floatUp ${animationDuration}s ease-out forwards;
+        animation: floatUp${isMobile ? 'Mobile' : ''} ${animationDuration}s ease-in-out forwards;
     `;
     
     // Random position at bottom of screen
@@ -180,20 +181,25 @@ style.textContent = `
         }
     }
     
-    /* Slower animation on mobile */
-    @media (max-width: 768px) {
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.9;
-            }
-            to {
-                transform: translateY(-80vh) rotate(360deg);
-                opacity: 0;
-            }
+    /* Much slower, smoother animation on mobile */
+    @keyframes floatUpMobile {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        20% {
+            opacity: 0.95;
+        }
+        50% {
+            opacity: 0.9;
+            transform: translateY(-35vh) rotate(90deg);
+        }
+        80% {
+            opacity: 0.7;
+        }
+        to {
+            transform: translateY(-70vh) rotate(180deg);
+            opacity: 0;
         }
     }
 `;
@@ -281,7 +287,7 @@ function initMobileFeatures() {
     if (isMobile) {
         // Reduce floating hearts frequency on mobile for better performance
         clearInterval(heartInterval);
-        heartInterval = setInterval(createFloatingHeart, 10000); // Slower on mobile (10 seconds instead of 6)
+        heartInterval = setInterval(createFloatingHeart, 15000); // Much slower on mobile (15 seconds between hearts)
         
         // Add touch feedback for buttons
         const touchElements = document.querySelectorAll('.cta-button, .detail-button, .submit-button, .form-link');
