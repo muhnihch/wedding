@@ -135,11 +135,16 @@ function createFloatingHeart() {
     const heart = document.createElement('div');
     heart.innerHTML = '💕';
     
-    // Detect if mobile
-    const isMobile = window.innerWidth <= 768;
+    // Detect if mobile - check both width and user agent for better detection
+    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     
-    // Very slow animation speed on mobile (250s = 1/10 speed for maximum visibility)
-    const animationDuration = isMobile ? 250 : 6;
+    // Extremely slow animation speed on mobile (300s = very slow for maximum visibility)
+    const animationDuration = isMobile ? 300 : 6;
+    
+    // Debug log
+    if (isMobile) {
+        console.log('Mobile detected - using slow animation:', animationDuration + 's');
+    }
     const travelDistance = isMobile ? '-70vh' : '-100vh'; // Less distance on mobile
     const rotationSpeed = isMobile ? 180 : 360; // Slower rotation on mobile
     
@@ -181,34 +186,54 @@ style.textContent = `
         }
     }
     
-    /* Much slower, smoother animation on mobile - hearts move very slowly for better visibility */
+    /* Extremely slow animation on mobile - hearts move very slowly for maximum visibility */
     @keyframes floatUpMobile {
         0% {
             transform: translateY(0) rotate(0deg);
             opacity: 1;
         }
+        5% {
+            opacity: 1;
+            transform: translateY(-2vh) rotate(5deg);
+        }
         10% {
             opacity: 1;
-            transform: translateY(-5vh) rotate(10deg);
+            transform: translateY(-4vh) rotate(10deg);
         }
-        25% {
-            opacity: 0.95;
-            transform: translateY(-15vh) rotate(30deg);
+        20% {
+            opacity: 0.98;
+            transform: translateY(-8vh) rotate(20deg);
+        }
+        30% {
+            opacity: 0.96;
+            transform: translateY(-12vh) rotate(30deg);
+        }
+        40% {
+            opacity: 0.94;
+            transform: translateY(-16vh) rotate(40deg);
         }
         50% {
-            opacity: 0.9;
-            transform: translateY(-35vh) rotate(60deg);
+            opacity: 0.92;
+            transform: translateY(-20vh) rotate(50deg);
         }
-        75% {
-            opacity: 0.8;
-            transform: translateY(-55vh) rotate(90deg);
+        60% {
+            opacity: 0.9;
+            transform: translateY(-30vh) rotate(60deg);
+        }
+        70% {
+            opacity: 0.85;
+            transform: translateY(-40vh) rotate(70deg);
+        }
+        80% {
+            opacity: 0.75;
+            transform: translateY(-50vh) rotate(80deg);
         }
         90% {
             opacity: 0.6;
-            transform: translateY(-65vh) rotate(120deg);
+            transform: translateY(-60vh) rotate(90deg);
         }
         to {
-            transform: translateY(-70vh) rotate(150deg);
+            transform: translateY(-70vh) rotate(100deg);
             opacity: 0;
         }
     }
