@@ -138,8 +138,8 @@ function createFloatingHeart() {
     // Detect if mobile
     const isMobile = window.innerWidth <= 768;
     
-    // Much slower animation speed on mobile (25s for smooth, visible movement)
-    const animationDuration = isMobile ? 25 : 6;
+    // Very slow animation speed on mobile (250s = 1/10 speed for maximum visibility)
+    const animationDuration = isMobile ? 250 : 6;
     const travelDistance = isMobile ? '-70vh' : '-100vh'; // Less distance on mobile
     const rotationSpeed = isMobile ? 180 : 360; // Slower rotation on mobile
     
@@ -297,7 +297,7 @@ function initMobileFeatures() {
     if (isMobile) {
         // Reduce floating hearts frequency on mobile for better performance
         clearInterval(heartInterval);
-        heartInterval = setInterval(createFloatingHeart, 15000); // Much slower on mobile (15 seconds between hearts)
+        heartInterval = setInterval(createFloatingHeart, 30000); // Very slow on mobile (30 seconds between hearts)
         
         // Add touch feedback for buttons
         const touchElements = document.querySelectorAll('.cta-button, .detail-button, .submit-button, .form-link');
