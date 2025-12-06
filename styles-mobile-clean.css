@@ -76,7 +76,7 @@ body {
     background-size: cover;
     background-position: center 40%;
     background-repeat: no-repeat;
-    background-attachment: fixed; /* Fixed background - stays static while content scrolls */
+    background-attachment: scroll; /* Scroll on mobile for better compatibility */
     padding: 1.5rem 0;
     overflow: hidden;
 }
@@ -84,15 +84,22 @@ body {
 /* Mobile-specific background positioning */
 @media (max-width: 768px) {
     .hero {
+        background-image: url('assets/hero-background.jpg');
         background-position: center 45%;
         background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
         min-height: 500px;
     }
 }
 
 @media (max-width: 480px) {
     .hero {
+        background-image: url('assets/hero-background.jpg');
         background-position: center 50%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
         min-height: 450px;
         height: 65vh;
     }
