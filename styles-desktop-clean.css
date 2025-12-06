@@ -35,7 +35,7 @@ body {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: scroll; /* Static background - scrolls with content */
+    background-attachment: fixed; /* Fixed background - stays static while content scrolls */
     background-color: var(--background-light); /* Fallback color */
     position: relative;
 }
@@ -94,11 +94,7 @@ body::before {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-image: url('assets/hero-background.jpg');
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: scroll; /* Static background - scrolls with content */
+    /* Background inherited from body - no need to duplicate */
     padding: 2rem 0;
     overflow: hidden;
 }
