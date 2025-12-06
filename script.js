@@ -134,13 +134,21 @@ window.addEventListener('scroll', () => {
 function createFloatingHeart() {
     const heart = document.createElement('div');
     heart.innerHTML = '💕';
+    
+    // Detect if mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    // Slower animation on mobile (8s instead of 4s)
+    const animationDuration = isMobile ? 8 : 6;
+    const travelDistance = isMobile ? '-80vh' : '-100vh'; // Less distance on mobile
+    
     heart.style.cssText = `
         position: fixed;
-        font-size: 20px;
+        font-size: ${isMobile ? '18px' : '20px'};
         color: var(--primary-color);
         pointer-events: none;
         z-index: 1000;
-        animation: floatUp 4s linear forwards;
+        animation: floatUp ${animationDuration}s ease-out forwards;
     `;
     
     // Random position at bottom of screen
@@ -152,16 +160,40 @@ function createFloatingHeart() {
     // Remove heart after animation
     setTimeout(() => {
         heart.remove();
-    }, 4000);
+    }, animationDuration * 1000);
 }
 
 // Add CSS for floating hearts animation
 const style = document.createElement('style');
 style.textContent = `
     @keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.8;
+        }
         to {
             transform: translateY(-100vh) rotate(360deg);
             opacity: 0;
+        }
+    }
+    
+    /* Slower animation on mobile */
+    @media (max-width: 768px) {
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.9;
+            }
+            to {
+                transform: translateY(-80vh) rotate(360deg);
+                opacity: 0;
+            }
         }
     }
 `;
@@ -249,7 +281,7 @@ function initMobileFeatures() {
     if (isMobile) {
         // Reduce floating hearts frequency on mobile for better performance
         clearInterval(heartInterval);
-        heartInterval = setInterval(createFloatingHeart, 6000);
+        heartInterval = setInterval(createFloatingHeart, 10000); // Slower on mobile (10 seconds instead of 6)
         
         // Add touch feedback for buttons
         const touchElements = document.querySelectorAll('.cta-button, .detail-button, .submit-button, .form-link');
