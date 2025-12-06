@@ -584,39 +584,121 @@ function initCustomRSVPForm() {
             specialMessage: specialMessage
         };
 
-        // Submit to Google Apps Script using fetch with form data
-        // Create form data
-        const formDataToSend = new URLSearchParams();
-        formDataToSend.append('attendance', attendance);
-        formDataToSend.append('guestSide', guestSide);
-        formDataToSend.append('guestCount', guestCount);
-        formDataToSend.append('specialMessage', specialMessage);
-
-        // Submit using fetch
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Required for Google Apps Script
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: formDataToSend.toString()
-        })
-        .then(() => {
-            // With no-cors mode, we can't read the response
-            // But if the request was sent, assume success
-            // Google Apps Script will process it
-            setTimeout(() => {
-                handleSuccess();
-            }, 500);
-        })
-        .catch((error) => {
-            console.error('Form submission error:', error);
-            // Still try to show success as the request might have gone through
-            // Google Apps Script often accepts the request even if we can't read the response
-            setTimeout(() => {
-                handleSuccess();
-            }, 500);
+        // Submit to Google Apps Script using a hidden form (most reliable method)
+        // This works better than fetch for Google Apps Script, especially on mobile
+        console.log('Submitting form data:', {
+            attendance: attendance,
+            guestSide: guestSide,
+            guestCount: guestCount,
+            specialMessage: specialMessage
         });
+
+        const iframeName = 'google-script-submit-' + Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeName;
+        iframe.id = iframeName;
+        iframe.style.position = 'absolute';
+        iframe.style.left = '-9999px';
+        iframe.style.width = '1px';
+        iframe.style.height = '1px';
+        iframe.style.border = 'none';
+        iframe.style.opacity = '0';
+        document.body.appendChild(iframe);
+
+        const hiddenForm = document.createElement('form');
+        hiddenForm.method = 'POST';
+        hiddenForm.action = GOOGLE_SCRIPT_URL;
+        hiddenForm.target = iframeName;
+        hiddenForm.style.display = 'none';
+        hiddenForm.enctype = 'application/x-www-form-urlencoded';
+        hiddenForm.acceptCharset = 'UTF-8';
+
+        // Add form fields as hidden inputs
+        function addHiddenInput(name, value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value || '';
+            hiddenForm.appendChild(input);
+        }
+
+        addHiddenInput('attendance', attendance);
+        addHiddenInput('guestSide', guestSide);
+        addHiddenInput('guestCount', guestCount);
+        addHiddenInput('specialMessage', specialMessage);
+
+        document.body.appendChild(hiddenForm);
+
+        let successHandled = false;
+        let submissionAttempted = false;
+
+        // Handle iframe load (indicates submission completed)
+        iframe.onload = function() {
+            console.log('Iframe loaded - submission may have completed');
+            setTimeout(function() {
+                if (!successHandled) {
+                    successHandled = true;
+                    console.log('Form submitted successfully via iframe');
+                    // Clean up
+                    setTimeout(function() {
+                        try {
+                            if (hiddenForm.parentNode) {
+                                hiddenForm.parentNode.removeChild(hiddenForm);
+                            }
+                            if (iframe.parentNode) {
+                                iframe.parentNode.removeChild(iframe);
+                            }
+                        } catch (e) {
+                            console.error('Error cleaning up:', e);
+                        }
+                    }, 100);
+                    handleSuccess();
+                }
+            }, 1500);
+        };
+
+        // Fallback timeout - assume success after reasonable time
+        setTimeout(function() {
+            if (!successHandled && submissionAttempted) {
+                successHandled = true;
+                console.log('Form submission timeout - assuming success');
+                setTimeout(function() {
+                    try {
+                        if (hiddenForm.parentNode) {
+                            hiddenForm.parentNode.removeChild(hiddenForm);
+                        }
+                        if (iframe.parentNode) {
+                            iframe.parentNode.removeChild(iframe);
+                        }
+                    } catch (e) {
+                        console.error('Error cleaning up:', e);
+                    }
+                }, 100);
+                // Assume success (Google Apps Script accepts submissions)
+                handleSuccess();
+            }
+        }, 3000);
+
+        // Submit the form
+        try {
+            submissionAttempted = true;
+            console.log('Submitting form to:', GOOGLE_SCRIPT_URL);
+            hiddenForm.submit();
+            console.log('Form submit() called');
+        } catch (err) {
+            console.error('Form submission error:', err);
+            submissionAttempted = false;
+            if (hiddenForm.parentNode) {
+                hiddenForm.parentNode.removeChild(hiddenForm);
+            }
+            if (iframe.parentNode) {
+                iframe.parentNode.removeChild(iframe);
+            }
+            if (!successHandled) {
+                successHandled = true;
+                handleError('Failed to submit form. Please check your connection and try again.');
+            }
+        }
 
         // Return false to prevent any default behavior
         return false;
@@ -624,20 +706,25 @@ function initCustomRSVPForm() {
 }
 
 // Initialize custom form when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
+function initializeForm() {
+    console.log('Initializing RSVP form...');
+    const form = document.getElementById('custom-rsvp-form');
+    if (form) {
+        console.log('Form found, initializing handler');
         initCustomRSVPForm();
-    });
-} else {
-    // DOM is already loaded
-    initCustomRSVPForm();
+    } else {
+        console.warn('Form not found, retrying...');
+    }
 }
 
-// Also try to initialize immediately (in case form is added dynamically)
-setTimeout(function() {
-    const form = document.getElementById('custom-rsvp-form');
-    if (form && !form.hasAttribute('data-initialized')) {
-        form.setAttribute('data-initialized', 'true');
-        initCustomRSVPForm();
-    }
-}, 100);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeForm);
+} else {
+    // DOM is already loaded
+    initializeForm();
+}
+
+// Also try to initialize after a delay (in case form is added dynamically)
+setTimeout(initializeForm, 100);
+setTimeout(initializeForm, 500);
+setTimeout(initializeForm, 1000);
