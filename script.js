@@ -135,18 +135,25 @@ function createFloatingHeart() {
     const heart = document.createElement('div');
     heart.innerHTML = '💕';
     
-    // Detect if mobile - check both width and user agent for better detection
-    const isMobile = window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // Force mobile detection - check multiple methods for mobile browsers
+    const isMobileWidth = window.innerWidth <= 768;
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile/i.test(navigator.userAgent);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isMobile = isMobileWidth || isMobileUA || isTouchDevice;
     
     // Extremely slow animation speed on mobile (300s = very slow for maximum visibility)
+    // Always use slow animation if any mobile indicator is present
     const animationDuration = isMobile ? 300 : 6;
+    const animationName = isMobile ? 'floatUpMobile' : 'floatUp';
     
-    // Debug log
-    if (isMobile) {
-        console.log('Mobile detected - using slow animation:', animationDuration + 's');
-    }
-    const travelDistance = isMobile ? '-70vh' : '-100vh'; // Less distance on mobile
-    const rotationSpeed = isMobile ? 180 : 360; // Slower rotation on mobile
+    // Debug log to help troubleshoot
+    console.log('Heart animation:', {
+        isMobile: isMobile,
+        width: window.innerWidth,
+        ua: navigator.userAgent.substring(0, 50),
+        duration: animationDuration + 's',
+        animation: animationName
+    });
     
     heart.style.cssText = `
         position: fixed;
@@ -154,7 +161,7 @@ function createFloatingHeart() {
         color: var(--primary-color);
         pointer-events: none;
         z-index: 1000;
-        animation: floatUp${isMobile ? 'Mobile' : ''} ${animationDuration}s ease-in-out forwards;
+        animation: ${animationName} ${animationDuration}s ease-in-out forwards !important;
     `;
     
     // Random position at bottom of screen
@@ -192,6 +199,10 @@ style.textContent = `
             transform: translateY(0) rotate(0deg);
             opacity: 1;
         }
+        2% {
+            opacity: 1;
+            transform: translateY(-1vh) rotate(2deg);
+        }
         5% {
             opacity: 1;
             transform: translateY(-2vh) rotate(5deg);
@@ -199,6 +210,10 @@ style.textContent = `
         10% {
             opacity: 1;
             transform: translateY(-4vh) rotate(10deg);
+        }
+        15% {
+            opacity: 0.99;
+            transform: translateY(-6vh) rotate(15deg);
         }
         20% {
             opacity: 0.98;
@@ -235,6 +250,13 @@ style.textContent = `
         to {
             transform: translateY(-70vh) rotate(100deg);
             opacity: 0;
+        }
+    }
+    
+    /* Force slow animation on mobile devices using CSS media query as backup */
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+        [style*="floatUp"] {
+            animation-duration: 300s !important;
         }
     }
 `;
