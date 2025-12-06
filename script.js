@@ -141,9 +141,9 @@ function createFloatingHeart() {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isMobile = isMobileWidth || isMobileUA || isTouchDevice;
     
-    // Extremely slow animation speed on mobile (300s = very slow for maximum visibility)
-    // Always use slow animation if any mobile indicator is present
-    const animationDuration = isMobile ? 300 : 6;
+    // Optimized animation speed on mobile (60s = 5x faster than previous 300s)
+    // Always use mobile animation if any mobile indicator is present
+    const animationDuration = isMobile ? 60 : 6;
     const animationName = isMobile ? 'floatUpMobile' : 'floatUp';
     
     // Debug log to help troubleshoot
@@ -253,10 +253,10 @@ style.textContent = `
         }
     }
     
-    /* Force slow animation on mobile devices using CSS media query as backup */
+    /* Force optimized animation speed on mobile devices using CSS media query as backup */
     @media (max-width: 768px), (hover: none) and (pointer: coarse) {
         [style*="floatUp"] {
-            animation-duration: 300s !important;
+            animation-duration: 60s !important;
         }
     }
 `;
