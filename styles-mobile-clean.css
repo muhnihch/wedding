@@ -31,7 +31,31 @@ body {
     color: var(--text-dark);
     overflow-x: hidden;
     font-size: 16px;
-    background: var(--background-light);
+    background-image: url('assets/hero-background.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll; /* Static background - scrolls with content */
+    background-color: var(--background-light); /* Fallback color */
+    position: relative;
+}
+
+/* Subtle overlay on body background for readability across all sections - Mobile */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.9) 0%,
+        rgba(245, 240, 232, 0.95) 50%,
+        rgba(255, 255, 255, 0.9) 100%
+    );
+    z-index: -1;
+    pointer-events: none;
 }
 
 .container {
