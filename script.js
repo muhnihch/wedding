@@ -44,45 +44,8 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown(); // Initial call
 
-// RSVP Form functionality
-const rsvpForm = document.getElementById('rsvpForm');
-const attendanceRadios = document.querySelectorAll('input[name="attendance"]');
-const guestCountGroup = document.getElementById('guestCountGroup');
-
-// Show/hide guest count based on attendance selection
-attendanceRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-        if (this.value === 'yes') {
-            guestCountGroup.style.display = 'block';
-        } else {
-            guestCountGroup.style.display = 'none';
-        }
-    });
-});
-
-// RSVP Form submission
-rsvpForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(rsvpForm);
-    const rsvpData = {
-        name: formData.get('guestName'),
-        email: formData.get('email'),
-        attendance: formData.get('attendance'),
-        guestCount: formData.get('guestCount') || '1',
-        dietary: formData.get('dietary'),
-        message: formData.get('message')
-    };
-    
-    // Here you would typically send the data to your backend
-    // For now, we'll show a success message
-    showRSVPSuccess();
-    
-    // Reset form
-    rsvpForm.reset();
-    guestCountGroup.style.display = 'none';
-});
+// Old RSVP Form functionality - removed as we're using custom-rsvp-form
+// The custom form is handled by initCustomRSVPForm() function below
 
 function showRSVPSuccess() {
     const successMessage = document.createElement('div');
